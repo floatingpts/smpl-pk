@@ -24,6 +24,7 @@ class Musician(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     follower_count = models.IntegerField(default=0)
     balance = models.DecimalField(max_digits=11, decimal_places=2)
+    rating = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.user.username
