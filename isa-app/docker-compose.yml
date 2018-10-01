@@ -6,4 +6,8 @@ models:
         - ./:/app
     ports:
         - "8001:8000"
-    command: bash -c "mod_wsgi-express start-server --working-directory /app/ --reload-on-changes /app/isa-app/wsgi.py"
+    command: >
+    bash -c "pip install djangorestframework
+    && pip install markdown
+    && pip install django-filter
+    && mod_wsgi-express start-server --working-directory /app/ --reload-on-changes /app/isa-app/wsgi.py"
