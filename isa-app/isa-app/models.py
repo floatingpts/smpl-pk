@@ -8,12 +8,21 @@ import datetime
 
 class Sample(models.Model):
     name = models.CharField(max_length=50)
-    purchase_count = models.IntegerField(default=0)
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    current_seller = models.ForeignKey(Musician, null=True, blank=True, on_delete=models.SET_NULL)
-    buyers = models.ManyToManyField(Musician, blank=True)
     minute_length = models.IntegerField(default=0)
     second_length = models.IntegerField(default=1)
+    pack = models.ForeignKey(SamplePack, blank=True)
+
+    def __str__(self):
+        return self.name
+
+class SamplePack(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField(max_length=1000)
+    purchase_count = models.IntegerField(default=0)
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    num_samples = models.IntegerField(default=0)
+    buyers = models.ManyToManyField(Musician, blank=True)
+    current_seller = models.ForeignKey(Musician, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
