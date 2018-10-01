@@ -2,9 +2,9 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Musician, Sample, SamplePack
 
-class MusicianSerializer(serializers.HyperLinkedModelSerializer):
+class SampleSerializer(serializers.HyperLinkedModelSerializer):
 	class Meta:
-		model = Musician
+		model = Sample
 		fields = ('url', 'name', 'minute_length', 'second_length', 'pack')
 
 class SamplePackSerializer(serializers.HyperLinkedModelSerializer):
