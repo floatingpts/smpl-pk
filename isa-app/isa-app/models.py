@@ -8,7 +8,6 @@ import datetime
 
 class Sample(models.Model):
     name = models.CharField(max_length=50)
-    sample_seller = models.ForeignKey(USERSTUFF, on_delete=models.SET_NULL, related_name="sample_seller")
     purchase_count = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     current_seller = models.ForeignKey(Musician, null=True, blank=True, on_delete=models.SET_NULL)
