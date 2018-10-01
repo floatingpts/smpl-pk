@@ -7,7 +7,7 @@ import datetime
 
 
 class Sample(models.Model):
-	url = models.CharField()
+    url = models.CharField()
     name = models.CharField(max_length=50)
     minute_length = models.IntegerField(default=0)
     second_length = models.IntegerField(default=1)
@@ -17,10 +17,10 @@ class Sample(models.Model):
         return self.name
 
 class SamplePack(models.Model):
-	url = models.CharField()
-	name = models.CharField(max_length=50)
-	description = models.TextField(max_length=1000)
-	purchase_count = models.IntegerField(default=0)
+    url = models.CharField()
+    name = models.CharField(max_length=50)
+    description = models.TextField(max_length=1000)
+    purchase_count = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     num_samples = models.IntegerField(default=0)
     buyers = models.ManyToManyField(Musician, blank=True)
@@ -31,7 +31,7 @@ class SamplePack(models.Model):
 
 
 class Musician(models.Model):
-	url = models.CharField()
+    url = models.CharField()
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     follower_count = models.IntegerField(default=0)
     balance = models.DecimalField(max_digits=11, decimal_places=2)
