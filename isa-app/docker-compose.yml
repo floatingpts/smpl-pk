@@ -11,3 +11,4 @@ models:
         && pip install markdown
         && pip install django-filter
         && mod_wsgi-express start-server --working-directory /app/ --reload-on-changes /app/isa-app/wsgi.py"
+

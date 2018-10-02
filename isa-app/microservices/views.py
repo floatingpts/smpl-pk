@@ -3,8 +3,13 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+<<<<<<< HEAD
 from .models import Musician, Sample, SamplePack
 from .serializers import SampleSerializer, SamplePackSerializer, MusicianSerializer
+=======
+from .models import *
+from .serializers import *
+>>>>>>> 3be42994566f0fe0ef06386558ad25e1fece9641
 
 # Create your views here.
 
