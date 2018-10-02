@@ -41,4 +41,3 @@ class Sample(models.Model):
         return self.name
 
 
-
