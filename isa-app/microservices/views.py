@@ -8,20 +8,22 @@ from .serializers import *
 
 # Create your views here.
 
+@csrf_exempt
 def musician_list(request):
 	if request.method == 'GET':
 		musicians = Musician.objects.all()
 		serializer = MusicianSerializer(musicians, many=True)
 		return JsonResponse(serializer.data, safe=False)
 
-	if request.method == 'POST':
-		data = JSONParser.parse(request)
+	elif request.method == 'POST':
+		data = JSONParser().parse(request)
 		serializer = MusicianSerializer(data=data)
 		if serializer.is_valid():
 			serializer.save()
 			return JsonResponse(serializer.data, status=201)
 		return JsonResponse(serializer.errors, status=400)
 
+@csrf_exempt
 def musician_detail(request, pk):
 	"""
 	CRUD methods for Musician model
@@ -33,7 +35,7 @@ def musician_detail(request, pk):
 
 	if request.method == 'GET':
 		serializer = MusicianSerializer(musician)
-		return JsonResponse(musician.data)
+		return JsonResponse(serializer.data)
 
 	elif request.method == 'PUT':
 		data = JSONParser().parse(request)
@@ -47,20 +49,22 @@ def musician_detail(request, pk):
 		musician.delete()
 		return HttpResponse(status=204)
 
+@csrf_exempt
 def sample_list(request):
 	if request.method == 'GET':
 		samples = Sample.objects.all()
-		serializer = SampleSerializer(sample, many=True)
+		serializer = SampleSerializer(samples, many=True)
 		return JsonResponse(serializer.data, safe=False)
 
 	if request.method == 'POST':
-		data = JSONParser.parse(request)
+		data = JSONParser().parse(request)
 		serializer = SampleSerializer(data=data)
 		if serializer.is_valid():
 			serializer.save()
 			return JsonResponse(serializer.data, status=201)
 		return JsonResponse(serializer.errors, status=400)
 
+@csrf_exempt
 def sample_detail(request, pk):
 	"""
 	CRUD methods for Musician model
@@ -72,7 +76,7 @@ def sample_detail(request, pk):
 
 	if request.method == 'GET':
 		serializer = SampleSerializer(sample)
-		return JsonResponse(sample.data)
+		return JsonResponse(serializer.data)
 
 	elif request.method == 'PUT':
 		data = JSONParser().parse(request)
@@ -86,21 +90,23 @@ def sample_detail(request, pk):
 		sample.delete()
 		return HttpResponse(status=204)
 
-def samplePack_list(request):
+@csrf_exempt
+def sample_pack_list(request):
 	if request.method == 'GET':
 		samplePacks = SamplePack.objects.all()
 		serializer = SamplePackSerializer(samplePacks, many=True)
 		return JsonResponse(serializer.data, safe=False)
 
 	if request.method == 'POST':
-		data = JSONParser.parse(request)
+		data = JSONParser().parse(request)
 		serializer = SamplePackSerializer(data=data)
 		if serializer.is_valid():
 			serializer.save()
 			return JsonResponse(serializer.data, status=201)
 		return JsonResponse(serializer.errors, status=400)
 
-def samplePack_detail(request, pk):
+@csrf_exempt
+def sample_pack_detail(request, pk):
 	"""
 	CRUD methods for Musician model
 	"""
@@ -111,7 +117,7 @@ def samplePack_detail(request, pk):
 
 	if request.method == 'GET':
 		serializer = SamplePackSerializer(samplePack)
-		return JsonResponse(samplePack.data)
+		return JsonResponse(serializer.data)
 
 	elif request.method == 'PUT':
 		data = JSONParser().parse(request)

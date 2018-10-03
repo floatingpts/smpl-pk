@@ -5,12 +5,12 @@ from .models import Musician, Sample, SamplePack
 class MusicianSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Musician
-		fields = ('id', 'user', 'follower_count', 'balance', 'rating')
+		fields = ('id', 'username', 'follower_count', 'balance', 'rating')
 
 class SamplePackSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = SamplePack
-		fields = ('id', 'name', 'description', 'purchase_count', 
+		fields = ('id', 'name', 'description', 'purchase_count',
 			'price', 'num_samples', 'buyers', 'current_seller')
 
 class SampleSerializer(serializers.ModelSerializer):
