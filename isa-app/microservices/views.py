@@ -2,21 +2,17 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-<<<<<<< HEAD
-from .models import Musician, Sample, SamplePack
-from .serializers import SampleSerializer, SamplePackSerializer, MusicianSerializer
-=======
 from .models import *
 from .serializers import *
->>>>>>> 3be42994566f0fe0ef06386558ad25e1fece9641
 
 # Create your views here.
 
-def musician_crud(request, pk):
-	"""
-	CRUD methods for Musician model
-	"""
+def musician_list(request):
+	if request.method == 'GET':
+		musicians = Musician.objects.all()
+		serializer = MusicianSerializer(musicians, many=True)
+		return JsonResponse(serializer.data, safe=False)
+
 	if request.method == 'POST':
 		data = JSONParser.parse(request)
 		serializer = MusicianSerializer(data=data)
@@ -25,6 +21,10 @@ def musician_crud(request, pk):
 			return JsonResponse(serializer.data, status=201)
 		return JsonResponse(serializer.errors, status=400)
 
+def musician_detail(request, pk):
+	"""
+	CRUD methods for Musician model
+	"""
 	try:
 		musician = Musician.objects.get(pk=pk)
 	except Musician.DoesNotExist:
@@ -46,10 +46,12 @@ def musician_crud(request, pk):
 		musician.delete()
 		return HttpResponse(status=204)
 
-def sample_crud(request, pk):
-	"""
-	CRUD methods for Musician model
-	"""
+def sample_list(request):
+	if request.method == 'GET':
+		samples = Sample.objects.all()
+		serializer = SampleSerializer(sample, many=True)
+		return JsonResponse(serializer.data, safe=False)
+
 	if request.method == 'POST':
 		data = JSONParser.parse(request)
 		serializer = SampleSerializer(data=data)
@@ -58,6 +60,10 @@ def sample_crud(request, pk):
 			return JsonResponse(serializer.data, status=201)
 		return JsonResponse(serializer.errors, status=400)
 
+def sample_detail(request, pk):
+	"""
+	CRUD methods for Musician model
+	"""
 	try:
 		sample = Sample.objects.get(pk=pk)
 	except Sample.DoesNotExist:
@@ -79,10 +85,12 @@ def sample_crud(request, pk):
 		sample.delete()
 		return HttpResponse(status=204)
 
-def samplePack_crud(request, pk):
-	"""
-	CRUD methods for Musician model
-	"""
+def samplePack_list(request):
+	if request.method == 'GET':
+		samplePacks = SamplePack.objects.all()
+		serializer = SamplePackSerializer(samplePacks, many=True)
+		return JsonResponse(serializer.data, safe=False)
+
 	if request.method == 'POST':
 		data = JSONParser.parse(request)
 		serializer = SamplePackSerializer(data=data)
@@ -91,6 +99,10 @@ def samplePack_crud(request, pk):
 			return JsonResponse(serializer.data, status=201)
 		return JsonResponse(serializer.errors, status=400)
 
+def samplePack_detail(request, pk):
+	"""
+	CRUD methods for Musician model
+	"""
 	try:
 		samplePack = SamplePack.objects.get(pk=pk)
 	except SamplePack.DoesNotExist:
