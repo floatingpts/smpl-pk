@@ -2,21 +2,21 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Musician, Sample, SamplePack
 
-class MusicianSerializer(serializers.Serializer):
+class MusicianSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Musician
-		fields = ('url', 'user', 'follower_count', 'balance', 'rating')
+		fields = ('id', 'user', 'follower_count', 'balance', 'rating')
 
-class SamplePackSerializer(serializers.Serializer):
+class SamplePackSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = SamplePack
-		fields = ('url', 'name', 'description', 'purchase_count', 
+		fields = ('id', 'name', 'description', 'purchase_count', 
 			'price', 'num_samples', 'buyers', 'current_seller')
 
-class SampleSerializer(serializers.Serializer):
+class SampleSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Sample
-		fields = ('url', 'name', 'minute_length', 'second_length', 'pack')
+		fields = ('id', 'name', 'minute_length', 'second_length', 'pack')
 
 
 
