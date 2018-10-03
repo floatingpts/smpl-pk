@@ -1,0 +1,35 @@
+[
+{
+  "model": "microservices.musician",
+  "pk": 2,
+  "fields": {
+    "username": "you",
+    "follower_count": 19000,
+    "balance": "5555555.55",
+    "rating": 5
+  }
+},
+{
+  "model": "microservices.samplepack",
+  "pk": 2,
+  "fields": {
+    "name": "Ambient sound effects",
+    "description": "What the title says.",
+    "purchase_count": 0,
+    "price": "1.50",
+    "num_samples": 1,
+    "current_seller": null,
+    "buyers": []
+  }
+},
+{
+  "model": "microservices.sample",
+  "pk": 2,
+  "fields": {
+    "name": "Rain sound effect",
+    "minute_length": 1,
+    "second_length": 58,
+    "pack": 2
+  }
+}
+]
