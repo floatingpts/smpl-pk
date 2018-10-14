@@ -13,3 +13,7 @@ def samplePack_details(pk, template_name='pack_detail.html')
   }
 
   return render(request, template_name, data)
+
+
+def home(template_name='home.html')
+  return render(request, template_name)
