@@ -11,5 +11,6 @@ models:
         && pip install markdown
         && pip install django-filter
         && python manage.py migrate
+        && python manage.py loaddata db.json
         && mod_wsgi-express start-server --working-directory /app/ --reload-on-changes /app/isa-app/wsgi.py"
 
