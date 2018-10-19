@@ -1,9 +1,10 @@
 models:
     image: tp33/django
+    container_name: models
     external_links:
         - mysql:db
     volumes:
-        - ./:/app
+        - ./isa-app:/app
     ports:
         - "8001:8000"
     command: >
@@ -12,5 +13,26 @@ models:
         && pip install django-filter
         && python manage.py migrate
         && python manage.py loaddata db.json
-        && mod_wsgi-express start-server --working-directory /app/ --reload-on-changes /app/isa-app/wsgi.py"
+        && mod_wsgi-express start-server --working-directory /app/ --reload-on-changes isa-app/wsgi.py"
 
+exp:
+    image: tp33/django
+    container_name: exp
+    links:
+        - models:models-api
+    ports:
+        - "8002:8000"
+    volumes:
+        - ./experiences-layer:/app
+    command: "mod_wsgi-express start-server --reload-on-changes experience-layer/wsgi.py"
+
+web:
+    image: tp33/django
+    container_name: web
+    links:
+        - exp:exp-api
+    ports:
+        - "8000:8000"
+    volumes:
+        - ./views-layer:/app
+    command: "mod_wsgi-express start-server --reload-on-changes views-layer/wsgi.py"
