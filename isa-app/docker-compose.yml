@@ -4,7 +4,7 @@ models:
     external_links:
         - mysql:db
     volumes:
-        - ./isa-app:/app
+        - ./:/app
     ports:
         - "8001:8000"
     command: >
@@ -23,7 +23,7 @@ exp:
     ports:
         - "8002:8000"
     volumes:
-        - ./experiences-layer:/app
+        - ../experience-layer:/app
     command: "mod_wsgi-express start-server --reload-on-changes experience-layer/wsgi.py"
 
 web:
@@ -34,5 +34,5 @@ web:
     ports:
         - "8000:8000"
     volumes:
-        - ./views-layer:/app
-    command: "mod_wsgi-express start-server --reload-on-changes views-layer/wsgi.py"
+        - ../front-layer:/app
+    command: "mod_wsgi-express start-server --reload-on-changes front-layer/wsgi.py"
