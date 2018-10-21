@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import *
+from . import *
 
 def samplePack_details(request, pk, template_name='pack_detail.html'):
   # Get specified sample pack.
