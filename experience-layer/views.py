@@ -11,12 +11,7 @@ def samplePack_details(request, pk):
   json_samples = urllib.request.urlopen(request_samples).read().decode('utf-8')
   json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
 
-  data = {
-    'pack': pack,
-    'samples': samples_ordered
-  }
-
-  return render(request, data)
+  
 
 
 def home(request, template_name='home.html'):
