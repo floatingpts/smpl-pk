@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^samples/$', views.sample_list),
     url(r'^samples/(?P<pk>[0-9]+)?/$', views.sample_detail),
     url(r'^samples_in_pack/(?P<pk>[0-9]+)?/$', views.samples_in_pack),
+    url(r'^top5_packs/$', views.top5_sample_packs),
 ]
