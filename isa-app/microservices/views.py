@@ -144,4 +144,11 @@ def samples_in_pack(request, pk):
     serializer = SampleSerializer(sample, data=data)
     return JsonResponse(serializer.data)
 
+@csrf_exempt
+def top5_sample_packs(request):
+    samplePacks = SamplePack.order_by('-purchase_count')[:5]
+    data = JSONParser().parse(request)
+    serializer = SamplePackSerializer(samplePacks, data=data)
+    return JsonResponse(serializer.data)
+    
 
