@@ -6,11 +6,15 @@ from .models import *
 
 def samplePack_details(request, pk):
   # Get specified sample pack.
-  request_samples = urllib.request.Request('db:8001/samples_in_packs', method='GET')
-  request_pack = urllib.request.Request('db:8001/sample_packs' + pk)
+  request_samples = urllib.request.Request('models-api:8001/samples_in_packs', method='GET')
+  request_pack = urllib.request.Request('models-api:8001/sample_packs' + pk)
   json_samples = urllib.request.urlopen(request_samples).read().decode('utf-8')
   json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
 
+  # We're processing a pack and all the samples in it, so
+  # how do we treat this in our experience layer? Do we have
+  # two JsonResponses for two separate views, and include the
+  # sample views in the pack view?
   data = {
     'pack': pack,
     'samples': samples_ordered
@@ -20,6 +24,6 @@ def samplePack_details(request, pk):
 
 
 def home(request, template_name='home.html'):
-  top_packs = urllib.request.Request('db:8001/top5_packs')
+  top_packs = urllib.request.Request('models-api:8001/top5_packs')
   serializer = SamplePackSerializer(top_packs)
   return JsonResponse(serializer.data)
