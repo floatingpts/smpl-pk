@@ -108,7 +108,7 @@ def sample_pack_list(request):
 @csrf_exempt
 def sample_pack_detail(request, pk):
 	"""
-	CRUD methods for Musician model
+	CRUD methods for SamplePack model
 	"""
 	try:
 		samplePack = SamplePack.objects.get(pk=pk)
@@ -130,3 +130,18 @@ def sample_pack_detail(request, pk):
 	elif request.method == 'DELETE':
 		samplePack.delete()
 		return HttpResponse(status=204)
+
+@csrf_exempt
+def samples_in_pack(request, pk):
+    try:
+        sample = Sample.objects.get(pk=pk)
+    except Sample.DoesNotExist:
+        return HttpResponse(status=404)
+    samples = Sample.objects.filter(pack=pk)
+    samples_ordered = samples.order_by('name')
+
+    data = JSONParser().parse(request)
+    serializer = SampleSerializer(sample, data=data)
+    return JsonResponse(serializer.data)
+
+

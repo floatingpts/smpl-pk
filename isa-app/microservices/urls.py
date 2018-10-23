@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^sample_packs/(?P<pk>[0-9]+)?/$', views.sample_pack_detail),
     url(r'^samples/$', views.sample_list),
     url(r'^samples/(?P<pk>[0-9]+)?/$', views.sample_detail),
+    url(r'^samples_in_pack/(?P<pk>[0-9]+)?/$', views.samples_in_pack),
 ]
