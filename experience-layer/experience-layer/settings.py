@@ -26,6 +26,7 @@ SECRET_KEY = '4n7puu09l5$+0e6)3r3-&rynp3j@c$9tqcw$%wz6nq0su8b^!&'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'localhost',
     'exp-api',
 ]
 
