@@ -15,12 +15,7 @@ def samplePack_details(request, pk):
   # how do we treat this in our experience layer? Do we have
   # two JsonResponses for two separate views, and include the
   # sample views in the pack view?
-  data = {
-    'pack': pack,
-    'samples': samples_ordered
-  }
 
-  return render(request, data)
 
 
 def home(request, template_name='home.html'):
