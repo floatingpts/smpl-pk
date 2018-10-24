@@ -150,5 +150,5 @@ def top5_sample_packs(request):
     data = JSONParser().parse(request)
     serializer = SamplePackSerializer(samplePacks, data=data)
     return JsonResponse(serializer.data)
-    
+
 
