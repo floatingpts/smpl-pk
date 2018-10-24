@@ -26,6 +26,7 @@ SECRET_KEY = '4lb#%7_h&wtl=za0=t6pe0x0+)&)8^yh)v@soa7p*ra$g*jb)t'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'localhost',
     'models-api',
 ]
 
