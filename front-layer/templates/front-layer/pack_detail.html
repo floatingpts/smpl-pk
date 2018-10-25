@@ -11,10 +11,19 @@
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="nav-bar-brand" href="{% url 'home' %}">Home</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+         <a class="navbar-brand" href="{% url 'home' %}">smpl.pk</a>
+         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-         expanded="false" aria-label="Toggle navigation">
+             <span class="navbar-toggler-icon"></span>
+         </button>
+         <ul class="navbar-nav mr-auto">
+             <li class="nav-item active">
+                 <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
+             </li>
+         </ul>
+         <form class="form-inline my-2 my-lg-0">
+             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+         </form>
     </nav>
     <div class="container-fluid">
         <div class="row">
@@ -32,11 +41,9 @@
                 </ul>
             </div>
             <div class="col-md-9">
-                <h2>Sample pack name</h2>
+                <h2>{{ pack.name }}</h2>
                 <div class="card">
-                    <div class="card-body">
-                        Sample description goes here...
-                    </div>
+                    <div class="card-body">{{ pack.description }}</div>
                 </div>
                 <div>
                     <table class="table">
@@ -49,24 +56,14 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for sample in samples %}
                             <tr>
                                 <td><i class="fas fa-play"></i></td>
-                                <th scope="row">1</th>
-                                <td>Kick</td>
-                                <td>0m3s</td>
+                                <th scope="row">{{ sample.id|add:"1" }}</th>
+                                <td>{{ sample.name }}</td>
+                                <td>{{ sample.minute_length }}m{{ sample.second_length }}s</td>
                             </tr>
-                            <tr>
-                                <td><i class="fas fa-play"></i></td>
-                                <th scope="row">2</th>
-                                <td>Hi-hat</td>
-                                <td>0m1s</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-play"></i></td>
-                                <th scope="row">3</th>
-                                <td>Crash</td>
-                                <td>0m10s</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>

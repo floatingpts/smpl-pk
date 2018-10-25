@@ -22,7 +22,7 @@ class SamplePack(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
     num_samples = models.IntegerField(default=0)
     buyers = models.ManyToManyField(Musician, blank=True, related_name='buyers_set')
-    current_seller = models.ForeignKey(Musician, null=True, blank=True, on_delete=models.SET_NULL, related_name='seller_set')
+    current_seller = models.ForeignKey(Musician, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
