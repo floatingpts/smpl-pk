@@ -1,19 +1,36 @@
 from django.shortcuts import render, get_object_or_404
-from . import *
+from django.http import JsonResponse
+import urllib.request
+import urllib.parse
+import json
 
-def samplePack_details(request, pk, template_name='pack_detail.html'):
+def samplePack_details(request, pk):
   # Get specified sample pack.
-  pack = get_object_or_404(SamplePack, pk=pk)
-  samples = Sample.objects.filter(pack=pk)
-  samples_ordered = samples.order_by('name')
+  request_samples = urllib.request.Request('http://models-api:8000/api/samples_in_pack/' + str(pk) + '/')
+  request_pack = urllib.request.Request('http://models-api:8000/api/sample_packs/' + str(pk) + '/')
+  json_samples = urllib.request.urlopen(request_samples).read().decode('utf-8')
+  json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
 
+  # Decode individual JSON responses into strings.
+  pack = json.loads(json_pack)
+  samples = json.loads(json_samples)
+
+  # Put it back into a response.
   data = {
-    'pack': pack,
-    'samples': samples_ordered
+    "pack": pack,
+    "samples": samples,
   }
 
-  return render(request, template_name, data)
+  return JsonResponse(data)
 
 
 def home(request, template_name='home.html'):
-  return render(request, template_name)
+  top_packs = urllib.request.Request('http://models-api:8000/api/top5_sample_packs/')
+  json_packs = urllib.request.urlopen(top_packs).read().decode('utf-8')
+  packs = json.loads(json_packs)
+
+  data = {
+    "packs": packs,
+  }
+
+  return JsonResponse(data)
