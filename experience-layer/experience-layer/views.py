@@ -11,7 +11,7 @@ def samplePack_details(request, pk):
   json_samples = urllib.request.urlopen(request_samples).read().decode('utf-8')
   json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
 
-  # Decode individual JSON responses into strings.
+  # Decode individual JSON responses from strings.
   pack = json.loads(json_pack)
   samples = json.loads(json_samples)
 
@@ -24,7 +24,7 @@ def samplePack_details(request, pk):
   return JsonResponse(data)
 
 
-def home(request, template_name='home.html'):
+def home(request):
   top_packs = urllib.request.Request('http://models-api:8000/api/top5_sample_packs/')
   json_packs = urllib.request.urlopen(top_packs).read().decode('utf-8')
   packs = json.loads(json_packs)

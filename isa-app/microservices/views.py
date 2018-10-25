@@ -138,7 +138,6 @@ def samples_in_pack(request, pk):
     except Sample.DoesNotExist:
         return HttpResponse(status=404)
     samples = Sample.objects.filter(pack=pk)
-    samples_ordered = samples.order_by('name')
 
     serializer = SampleSerializer(samples, many=True)
     return JsonResponse(serializer.data, safe=False)
