@@ -6,14 +6,14 @@ import json
 
 def samplePack_details(request, pk):
   # Get specified sample pack.
-  request_samples = urllib.request.Request('http://models-api:8000/samples_in_pack/' + str(pk) + '/')
-  request_pack = urllib.request.Request('http://models-api:8000/sample_packs/' + str(pk) + '/')
+  request_samples = urllib.request.Request('http://models-api:8000/api/samples_in_pack/' + str(pk) + '/')
+  request_pack = urllib.request.Request('http://models-api:8000/api/sample_packs/' + str(pk) + '/')
   json_samples = urllib.request.urlopen(request_samples).read().decode('utf-8')
   json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
 
   # Decode individual JSON responses into strings.
-  pack = json.load(json_pack)
-  samples = json.load(json_samples)
+  pack = json.loads(json_pack)
+  samples = json.loads(json_samples)
 
   # Put it back into a response.
   data = {
@@ -25,6 +25,12 @@ def samplePack_details(request, pk):
 
 
 def home(request, template_name='home.html'):
-  top_packs = urllib.request.Request('http://models-api:8000/top5_sample_packs/')
-  serializer = SamplePackSerializer(top_packs, many=True)
-  return JsonResponse(serializer.data)
+  top_packs = urllib.request.Request('http://models-api:8000/api/top5_sample_packs/')
+  json_packs = urllib.request.urlopen(top_packs).read().decode('utf-8')
+  packs = json.loads(json_packs)
+
+  data = {
+    "packs": packs,
+  }
+
+  return JsonResponse(data)

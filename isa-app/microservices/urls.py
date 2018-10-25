@@ -10,5 +10,5 @@ urlpatterns = [
     path('samples/', views.sample_list),
     path('samples/<int:pk>/', views.sample_detail),
     path('samples_in_pack/<int:pk>/', views.samples_in_pack),
-    path('top5_packs/', views.top5_sample_packs),
+    path('top5_sample_packs/', views.top5_sample_packs),
 ]

@@ -134,21 +134,19 @@ def sample_pack_detail(request, pk):
 @csrf_exempt
 def samples_in_pack(request, pk):
     try:
-        sample = Sample.objects.get(pk=pk)
+        sample_pack = SamplePack.objects.get(pk=pk)
     except Sample.DoesNotExist:
         return HttpResponse(status=404)
     samples = Sample.objects.filter(pack=pk)
     samples_ordered = samples.order_by('name')
 
-    data = JSONParser().parse(request)
-    serializer = SampleSerializer(sample, data=data)
-    return JsonResponse(serializer.data)
+    serializer = SampleSerializer(samples, many=True)
+    return JsonResponse(serializer.data, safe=False)
 
 @csrf_exempt
 def top5_sample_packs(request):
-    samplePacks = SamplePack.order_by('-purchase_count')[:5]
-    data = JSONParser().parse(request)
-    serializer = SamplePackSerializer(samplePacks, data=data)
-    return JsonResponse(serializer.data)
+    samplePacks = SamplePack.objects.order_by('-purchase_count')[:5]
+    serializer = SamplePackSerializer(samplePacks, many=True)
+    return JsonResponse(serializer.data, safe=False)
 
 
