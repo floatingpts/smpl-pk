@@ -9,6 +9,7 @@
     "rating": 5
   }
 },
+
 {
   "model": "microservices.samplepack",
   "pk": 2,
@@ -22,6 +23,17 @@
     "buyers": []
   }
 },
+
+{
+  "model": "microservices.sample",
+  "pk": 1,
+  "fields": {
+    "name": "Waterfall sound effect",
+    "minute_length": 1,
+    "second_length": 57,
+    "pack": 2
+  }
+},
 {
   "model": "microservices.sample",
   "pk": 2,
@@ -31,5 +43,35 @@
     "second_length": 58,
     "pack": 2
   }
-}
+},
+{
+  "model": "microservices.sample",
+  "pk": 3,
+  "fields": {
+    "name": "Ocean sound effect",
+    "minute_length": 1,
+    "second_length": 49,
+    "pack": 2
+  }
+},
+{
+  "model": "microservices.sample",
+  "pk": 4,
+  "fields": {
+    "name": "Crickets sound effect",
+    "minute_length": 2,
+    "second_length": 1,
+    "pack": 2
+  }
+},
+{
+  "model": "microservices.sample",
+  "pk": 5,
+  "fields": {
+    "name": "Birdsong sound effect",
+    "minute_length": 1,
+    "second_length": 43,
+    "pack": 2
+  }
+},
 ]
