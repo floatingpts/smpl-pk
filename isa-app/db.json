@@ -10,6 +10,7 @@
   }
 },
 
+
 {
   "model": "microservices.samplepack",
   "pk": 2,
@@ -18,11 +19,64 @@
     "description": "What the title says.",
     "purchase_count": 0,
     "price": "1.50",
+    "num_samples": 4,
+    "current_seller": null,
+    "buyers": []
+  }
+},
+{
+  "model": "microservices.samplepack",
+  "pk": 1,
+  "fields": {
+    "name": "Brass sound effects",
+    "description": "Yeah. Trumpets.",
+    "purchase_count": 1,
+    "price": "1.75",
     "num_samples": 1,
     "current_seller": null,
     "buyers": []
   }
 },
+{
+  "model": "microservices.samplepack",
+  "pk": 3,
+  "fields": {
+    "name": "Drum sound effects",
+    "description": "Read the title.",
+    "purchase_count": 0,
+    "price": "2.00",
+    "num_samples": 1,
+    "current_seller": null,
+    "buyers": []
+  }
+},
+{
+  "model": "microservices.samplepack",
+  "pk": 4,
+  "fields": {
+    "name": "Violin sound effects",
+    "description": "Descriptive stuff goes here.",
+    "purchase_count": 0,
+    "price": "1.00",
+    "num_samples": 1,
+    "current_seller": null,
+    "buyers": []
+  }
+},
+{
+  "model": "microservices.samplepack",
+  "pk": 5,
+  "fields": {
+    "name": "Piano sound effects",
+    "description": "What the title says.",
+    "purchase_count": 0,
+    "price": "1.50",
+    "num_samples": 1,
+    "current_seller": null,
+    "buyers": []
+  }
+},
+
 
 {
   "model": "microservices.sample",
@@ -72,6 +126,46 @@
     "minute_length": 1,
     "second_length": 43,
     "pack": 2
+  }
+},
+{
+  "model": "microservices.sample",
+  "pk": 6,
+  "fields": {
+    "name": "Trombone sound effect",
+    "minute_length": 1,
+    "second_length": 0,
+    "pack": 1
+  }
+},
+{
+  "model": "microservices.sample",
+  "pk": 7,
+  "fields": {
+    "name": "Bongo sound effect",
+    "minute_length": 1,
+    "second_length": 43,
+    "pack": 3
+  }
+},
+{
+  "model": "microservices.sample",
+  "pk": 8,
+  "fields": {
+    "name": "Violin plucked sound effect",
+    "minute_length": 1,
+    "second_length": 22,
+    "pack": 4
+  }
+},
+{
+  "model": "microservices.sample",
+  "pk": 9,
+  "fields": {
+    "name": "C# piano sound effect",
+    "minute_length": 2,
+    "second_length": 2,
+    "pack": 5
   }
 },
 ]
