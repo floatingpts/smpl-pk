@@ -54,15 +54,15 @@
             <div class="col-md-9">
                 <!-- GENRES GO HERE EVENTUALLY !-->
                 <div class="row">
+                    {% for pack in packs %}
                     <div class="card" style="width: 18rem;">
-                        {% for pack in packs %}
                         <div class="card-body">
                             <h4 class="card-title">{{ pack.name }}</h4>
                             <p class="card-text">{{ pack.description }}</p>
                             <a href="{% url 'detail' pack.id %}" class="btn btn-primary">Preview</a>
                         </div>
-                        {% endfor %}
                     </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
