@@ -9,8 +9,6 @@
     "rating": 5
   }
 },
-
-
 {
   "model": "microservices.samplepack",
   "pk": 2,
@@ -76,8 +74,6 @@
     "buyers": []
   }
 },
-
-
 {
   "model": "microservices.sample",
   "pk": 1,
