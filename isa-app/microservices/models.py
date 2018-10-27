@@ -14,6 +14,11 @@ class Musician(models.Model):
     def __str__(self):
         return self.id
 
+class Authenticator(models.Model):
+    user_id = models.CharField(max_length=25)
+    authenticator = models.CharField(max_length=25, primary_key = True)
+    date_created = models.DateField()
+
 
 class SamplePack(models.Model):
     name = models.CharField(max_length=50)
