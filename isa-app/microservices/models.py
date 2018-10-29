@@ -16,8 +16,8 @@ class Musician(models.Model):
         return self.id
 
 class Authenticator(models.Model):
+    user_id = models.CharField(max_length=25)
     authenticator = models.IntegerField(primary_key = True)
-    user_id = models.IntegerField()
     date_created = models.DateField()
 
 

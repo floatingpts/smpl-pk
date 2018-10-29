@@ -3,9 +3,6 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-import os
-import hmac
-import settings
 from .models import *
 from .serializers import *
 
@@ -42,19 +39,9 @@ def musician_detail(request, pk):
 	elif request.method == 'PUT':
 		data = JSONParser().parse(request)
 		serializer = MusicianSerializer(musician, data=data)
-		authenticator = hmac.new(
-		        key = settings.SECRET_KEY.encode('utf-8'),
-      			msg = os.urandom(32),
-        		digestmod = 'sha256',
-    		    ).hexdigest()
 		if serializer.is_valid():
 			serializer.save()
-			try:
-				auth = Authenticator.objects.get(pk=pk)
-				return HttpResponse("<h1>Authenticator already exists</h1>")
-			except Authenticator.DoesNotExist:
-				//SAVE AUTHENTICATOR
-				return JsonResponse(serializer.data)
+			return JsonResponse(serializer.data)
 		return JsonResponse(serializer.errors, status=400)
 
 	elif request.method == 'DELETE':
