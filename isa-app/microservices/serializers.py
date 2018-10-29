@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Musician, Sample, SamplePack
+from .models import Musician, Sample, SamplePack, Authenticator
 
 class MusicianSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -17,6 +17,11 @@ class SampleSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Sample
 		fields = ('id', 'name', 'minute_length', 'second_length', 'pack')
+
+class AuthenticatorSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Authenticator
+		fields = ('authenticator', 'user_id', 'date_created')
 
 
 
