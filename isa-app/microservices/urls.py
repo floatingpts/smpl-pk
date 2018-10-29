@@ -3,8 +3,8 @@ from microservices import views
 
 app_name = 'microservices'
 urlpatterns = [
-    path('musicians/', views.musician_list),
-    path('musicians/<int:pk>/', views.musician_detail),
+    path('musicians/', views.musician_list, name="musician-list"),
+    path('musicians/<int:pk>/', views.musician_detail, name="musician-detail"),
     path('sample_packs/', views.sample_pack_list),
     path('sample_packs/<int:pk>/', views.sample_pack_detail),
     path('samples/', views.sample_list),
