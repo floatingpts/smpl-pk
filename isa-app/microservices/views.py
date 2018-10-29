@@ -6,6 +6,7 @@ from rest_framework.parsers import JSONParser
 from .models import *
 from .serializers import *
 
+# Create your views here.
 
 @csrf_exempt
 def musician_list(request):
