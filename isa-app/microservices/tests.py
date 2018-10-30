@@ -6,6 +6,60 @@ import json
 # ====================
 # Musician test cases.
 # ====================
+# CREATE functionality.
+class CreateMusicianTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def setUp(self):
+        pass
+
+    def test_create_valid_musician(self):
+        # Add a new musician.
+        musician_to_create = {
+            "username": "john.smith99",
+            "follower_count": 1,
+            "balance": "20.00",
+            "rating": 4,
+        }
+        self.client.post(
+                path=reverse('microservices:musician-list'),
+                data=musician_to_create,
+                content_type="application/json")
+
+        # Get the newly-created musician.
+        response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":3}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the POSTed musician is the same as before and is assigned an ID.
+        json_musician = response.content.decode("utf-8")
+        actual_musician = json.loads(json_musician)
+        expected_musician = musician_to_create
+        expected_musician["id"] = 3
+        self.assertEquals(actual_musician, expected_musician)
+
+    def test_create_invalid_musician(self):
+        # Try to add a new invalid musician.
+        musician_to_create = {
+            "non_existing_field": "foo",
+        }
+        self.client.post(
+                path=reverse('microservices:musician-list'),
+                data=musician_to_create,
+                content_type="application/json")
+
+        # Get the newly-created musician.
+        response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":3}))
+
+        # Check that the musician was not added.
+        self.assertEquals(response.status_code, 404)
+
+    def tearDown(self):
+        pass
+
+# RETRIEVE functionality.
 class GetMusicianDetailsTestCase(TestCase):
     # Test fixtures loaded here.
     fixtures = ['test_fixture.json']
@@ -18,9 +72,8 @@ class GetMusicianDetailsTestCase(TestCase):
         # Assumes user with ID 2 is stored in db from fixture.
         response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":2}))
 
-        # Checks that response contains parameter & implicitly
-        # checks that the HTTP status code is 200.
-        self.assertContains(response, 'id')
+        # Checks that the HTTP status code is 200.
+        self.assertEquals(response.status_code, 200)
 
         # Get musician from JSON response.
         # Django returns a byte string for the response content, which
