@@ -135,7 +135,134 @@ class GetMusicianListTestCase(TestCase):
 # =======================
 # Sample pack test cases.
 # =======================
-# Insert test cases here.
+class CreateSamplePackTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def setUp(self):
+        pass
+
+    def test_create_valid_samplePack(self):
+        # Add a new sample pack.
+        pack_to_create = {
+            "name": "Some sounds",
+            "description": "What the title says.",
+            "purchase_count": 0,
+            "price": "5",
+            "num_samples": 4,
+            "current_seller": null,
+            "buyers": []
+        }
+        self.client.post(
+                path=reverse('microservices:sample-pack-list'),
+                data=pack_to_create,
+                content_type="application/json")
+
+        # Get the newly-created musician.
+        response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":6}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the POSTed sample pack is the same as before and is assigned an ID.
+        json_pack = response.content.decode("utf-8")
+        actual_pack = json.loads(json_pack)
+        expected_pack = pack_to_create
+        expected_pack["id"] = 6
+        self.assertEquals(actual_pack, expected_pack)
+
+    def test_create_invalid_samplePack(self):
+        # Try to add a new invalid sample pack.
+        pack_to_create = {
+            "non_existing_field": "foo",
+        }
+        self.client.post(
+                path=reverse('microservices:sample-pack-list'),
+                data=pack_to_create,
+                content_type="application/json")
+
+        # Get the newly-created sample pack.
+        response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":6}))
+
+        # Check that the sample pack was not added.
+        self.assertEquals(response.status_code, 404)
+
+    def tearDown(self):
+        pass
+
+# RETRIEVE functionality.
+class GetSamplePackDetailsTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    # Setup method is called before each test in this class.
+    def setUp(self):
+        pass # Nothing to set up.
+
+    def test_get_existing_samplePack(self):
+        # Assumes pack with ID 2 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":2}))
+
+        # Checks that the HTTP status code is 200.
+        self.assertEquals(response.status_code, 200)
+
+        # Get musician from JSON response.
+        # Django returns a byte string for the response content, which
+        # needs to be decoded. See https://stackoverflow.com/questions/606191/.
+        pack_json = response.content.decode("utf-8")
+        pack = json.loads(pack_json)
+        self.assertEquals(pack["id"], 2)
+
+    # Non-existing pack ID given in url, so error.
+    def test_get_non_existing_samplePack(self):
+        # Try to get a pack with an unused ID.
+        response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":9}))
+
+        # Check that no such user exists.
+        self.assertEquals(response.status_code, 404)
+
+    def test_get_samplePack_invalid_id(self):
+        # Try to get a pack with an invalid ID (a string).
+        # Reverse can't be used because the resolver will try to match the url
+        # to the urlpattern, which validates whether the argument's type (in
+        # this case, the string doesn't match the <int:pk> parameter).
+        response = self.client.get('/api/sample_packs/foo/')
+
+        # Check that no such pack exists.
+        self.assertEquals(response.status_code, 404)
+
+    # Teardown method is called after each test.
+    def tearDown(self):
+        pass # Nothing to tear down.
+
+class GetSamplePackListTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    # Setup method is called before each test in this class.
+    def setUp(self):
+        pass # Nothing to set up.
+
+    def test_get_samplePack_list(self):
+        # Assumes user with pack 2 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:sample-pack-list'))
+
+        # Checks that the HTTP status code is 200 OK.
+        self.assertEqual(response.status_code, 200)
+
+        # Get first element in response.
+        pack_list_json = response.content.decode("utf-8")
+        pack_list = json.loads(pack_list_json)
+        pack = pack_list[0]
+
+        # Check that only 5 packs in list, check that first pack
+        # has an ID of 2.
+        self.assertEquals(len(pack_list), 5)
+        self.assertEquals(pack["id"], 2)
+
+    # Teardown method is called after each test.
+    def tearDown(self):
+        pass # Nothing to tear down.
 
 # ==================
 # Sample test cases.
