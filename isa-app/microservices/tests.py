@@ -378,10 +378,181 @@ class DeleteSamplePackTestCase(TestCase):
 # Sample test cases.
 # ==================
 # CREATE/POST functionality.
-# ...
+class CreateSampleTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_create_valid_sample(self):
+        # Add a new sample.
+        sample_to_create = {
+            "name": "sound",
+            "minute_length": 1,
+            "second_length": 20,
+            "pack": 2,
+        }
+        self.client.post(
+                path=reverse('microservices:samples-list'),
+                data=sample_to_create,
+                content_type="application/json")
+
+        # Get the newly-created sample.
+        response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":10}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the POSTed sample is the same as before and is assigned an ID.
+        json_sample = response.content.decode("utf-8")
+        actual_sample = json.loads(json_sample)
+        expected_sample = sample_to_create
+        expected_sample["id"] = 10
+        self.assertEquals(actual_sample, expected_sample)
+
+    def test_create_invalid_sample(self):
+        # Try to add a new invalid sample.
+        sample_to_create = {
+            "non_existing_field": "foo",
+        }
+        self.client.post(
+                path=reverse('microservices:samples-list'),
+                data=sample_to_create,
+                content_type="application/json")
+
+        # Get the newly-created sample.
+        response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":10}))
+
+        # Check that the sample was not added.
+        self.assertEquals(response.status_code, 404)
+
 # RETRIEVE/GET functionality.
-# ...
+class RetrieveSampleDetailsTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_get_existing_sample(self):
+        # Assumes sample with ID 2 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":2}))
+
+        # Checks that the HTTP status code is 200.
+        self.assertEquals(response.status_code, 200)
+
+        # Get sample from JSON response.
+        # Django returns a byte string for the response content, which
+        # needs to be decoded. See https://stackoverflow.com/questions/606191/.
+        sample_json = response.content.decode("utf-8")
+        sample = json.loads(sample_json)
+        self.assertEquals(sample["id"], 2)
+
+    # Non-existing sample ID given in url, so error.
+    def test_get_non_existing_sample(self):
+        # Try to get a sample with an unused ID.
+        response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":25}))
+
+        # Check that no such sample exists.
+        self.assertEquals(response.status_code, 404)
+
+    def test_get_sample_invalid_id(self):
+        # Try to get a sample with an invalid ID (a string).
+        # Reverse can't be used because the resolver will try to match the url
+        # to the urlpattern, which validates whether the argument's type (in
+        # this case, the string doesn't match the <int:pk> parameter).
+        response = self.client.get('/api/samples/foo/')
+
+        # Check that no such sample exists.
+        self.assertEquals(response.status_code, 404)
+
+class RetrieveSampleListTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_get_sample_list(self):
+        # Assumes sample with ID 1 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:samples-list'))
+
+        # Checks that the HTTP status code is 200 OK.
+        self.assertEqual(response.status_code, 200)
+
+        # Get first element in response.
+        sample_list_json = response.content.decode("utf-8")
+        sample_list = json.loads(sample_list_json)
+        sample = sample_list[0]
+
+        # Check that 9 samples in list, with first sample having an ID of 1.
+        self.assertEquals(len(sample_list), 9)
+        self.assertEquals(sample["id"], 1)
+
 # UPDATE/PUT functionality.
-# ...
+class UpdateSampleTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_update_valid_sample(self):
+        # Update the sample with ID 2.
+        updated_sample = {
+            "name": "sound",
+            "minute_length": 10,
+            "second_length": 0,
+            "pack": 2,
+        }
+        self.client.put(
+                path=reverse('microservices:samples-detail',
+                    kwargs={"pk":2}),
+                data=updated_sample,
+                content_type="application/json")
+
+        # Get the newly-updated sample.
+        response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":2}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the sample is updated.
+        json_sample = response.content.decode("utf-8")
+        actual_sample = json.loads(json_sample)
+        expected_sample = updated_sample
+        expected_sample["id"] = 2
+        self.assertEquals(actual_sample, expected_sample)
+
+    def test_update_invalid_sample(self):
+        # Get existing sample with ID 2.
+        old_sample_response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":2}))
+        old_json_sample = old_sample_response.content.decode("utf-8")
+        expected_sample = json.loads(old_json_sample)
+
+        # Try to update the sample with an invalid field.
+        invalid_updated_sample = {
+            "non_existing_field": "foo",
+        }
+        self.client.put(
+                path=reverse('microservices:samples-detail',
+                    kwargs={"pk":2}),
+                data=invalid_updated_sample,
+                content_type="application/json")
+
+        # Get the sample again.
+        new_sample_response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":2}))
+        new_json_sample = new_sample_response.content.decode("utf-8")
+        actual_sample = json.loads(new_json_sample)
+
+        # Check that the sample was not updated.
+        self.assertEquals(actual_sample, expected_sample)
+
 # DELETE/DEL functionality.
-# ...
+class DeleteSampleTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_delete_sample(self):
+        # Verify sample with ID of 2 exists before continuing.
+        verify_exists_response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":2}))
+        self.assertEquals(verify_exists_response.status_code, 200)
+
+        # Delete sample with ID of 2.
+        # This returns a 204 No Content response, but there isn't really
+        # a consistent standard among RESTful APIs in regards for what to return
+        # so there's no need to validate this behavior.
+        self.client.delete(reverse('microservices:samples-detail', kwargs={"pk":2}))
+
+        # Check that the sample no longer exists.
+        get_response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":2}))
+        self.assertEquals(get_response.status_code, 404)
