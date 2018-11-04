@@ -206,7 +206,7 @@ class GetSamplePackDetailsTestCase(TestCase):
         # Checks that the HTTP status code is 200.
         self.assertEquals(response.status_code, 200)
 
-        # Get musician from JSON response.
+        # Get sample pack from JSON response.
         # Django returns a byte string for the response content, which
         # needs to be decoded. See https://stackoverflow.com/questions/606191/.
         pack_json = response.content.decode("utf-8")
@@ -218,7 +218,7 @@ class GetSamplePackDetailsTestCase(TestCase):
         # Try to get a pack with an unused ID.
         response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":9}))
 
-        # Check that no such user exists.
+        # Check that no such pack exists.
         self.assertEquals(response.status_code, 404)
 
     def test_get_samplePack_invalid_id(self):
@@ -250,17 +250,36 @@ class GetSamplePackListTestCase(TestCase):
         # Checks that the HTTP status code is 200 OK.
         self.assertEqual(response.status_code, 200)
 
-        # Get first element in response.
+        # Get list of sample packs in response.
         pack_list_json = response.content.decode("utf-8")
         pack_list = json.loads(pack_list_json)
 
-        # Check that only 5 packs in list, check that first pack
-        # has an ID of 2.
+        # Check that only 5 packs in list.
         self.assertEquals(len(pack_list), 5)
 
     # Teardown method is called after each test.
     def tearDown(self):
         pass # Nothing to tear down.
+
+class SamplePackCRUDTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+    # Setup method is called before each test in this class.
+    def setUp(self):
+        pass # Nothing to set up.
+
+    def test_delete_samplePack(self):
+        #delete sample pack with pk=1
+        delete_data = {
+            'delete-sample-pack': 'Brass sound effects',
+            'pk': '1'
+        }
+        response1 = self.client.post('/sample_packs/1/', delete_data)
+        
+        #check that sample pack is deleted
+        response2 = self.client.get('/sample_packs/1/')
+        self.assertEquals(response2.status_code, 404)
+        
 
 # ==================
 # Sample test cases.
