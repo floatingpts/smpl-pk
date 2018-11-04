@@ -261,7 +261,7 @@ class GetSamplePackListTestCase(TestCase):
     def tearDown(self):
         pass # Nothing to tear down.
 
-class SamplePackCRUDTestCase(TestCase):
+class SamplePackEditAndDeleteTestCase(TestCase):
     # Test fixtures loaded here.
     fixtures = ['test_fixture.json']
     # Setup method is called before each test in this class.
@@ -279,7 +279,30 @@ class SamplePackCRUDTestCase(TestCase):
         #check that sample pack is deleted
         response2 = self.client.get('/sample_packs/1/')
         self.assertEquals(response2.status_code, 404)
-        
+
+    def test_edit_samplePack(self):
+        #edit name of sample pack with pk 2
+        new_data = {
+            "pk": "2",
+            "name": "Nice sounds",
+            "description": "What the title says.",
+            "purchase_count": 0,
+            "price": "1.50",
+            "num_samples": 4,
+            "current_seller": None,
+            "buyers": []
+        }
+        response1 = self.client.put('/sample_packs/2/', new_data)
+        #Check that pack changed
+        response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":2}))
+        # Checks that the HTTP status code is 200.
+        self.assertEquals(response.status_code, 200)
+        # Get sample pack from JSON response.
+        # Django returns a byte string for the response content, which
+        # needs to be decoded. See https://stackoverflow.com/questions/606191/.
+        pack_json = response.content.decode("utf-8")
+        pack = json.loads(pack_json)
+        self.assertEquals(pack["name"], "Nice sounds")
 
 # ==================
 # Sample test cases.
