@@ -6,13 +6,10 @@ import json
 # ====================
 # Musician test cases.
 # ====================
-# CREATE functionality.
+# CREATE/POST functionality.
 class CreateMusicianTestCase(TestCase):
     # Test fixtures loaded here.
     fixtures = ['test_fixture.json']
-
-    def setUp(self):
-        pass
 
     def test_create_valid_musician(self):
         # Add a new musician.
@@ -56,17 +53,10 @@ class CreateMusicianTestCase(TestCase):
         # Check that the musician was not added.
         self.assertEquals(response.status_code, 404)
 
-    def tearDown(self):
-        pass
-
-# RETRIEVE functionality.
-class GetMusicianDetailsTestCase(TestCase):
+# RETRIEVE/GET functionality.
+class RetrieveMusicianDetailsTestCase(TestCase):
     # Test fixtures loaded here.
     fixtures = ['test_fixture.json']
-
-    # Setup method is called before each test in this class.
-    def setUp(self):
-        pass # Nothing to set up.
 
     def test_get_existing_musician(self):
         # Assumes user with ID 2 is stored in db from fixture.
@@ -100,17 +90,9 @@ class GetMusicianDetailsTestCase(TestCase):
         # Check that no such user exists.
         self.assertEquals(response.status_code, 404)
 
-    # Teardown method is called after each test.
-    def tearDown(self):
-        pass # Nothing to tear down.
-
-class GetMusicianListTestCase(TestCase):
+class RetrieveMusicianListTestCase(TestCase):
     # Test fixtures loaded here.
     fixtures = ['test_fixture.json']
-
-    # Setup method is called before each test in this class.
-    def setUp(self):
-        pass # Nothing to set up.
 
     def test_get_musician_list(self):
         # Assumes user with ID 2 is stored in db from fixture.
@@ -128,19 +110,89 @@ class GetMusicianListTestCase(TestCase):
         self.assertEquals(len(musician_list), 1)
         self.assertEquals(musician["id"], 2)
 
-    # Teardown method is called after each test.
-    def tearDown(self):
-        pass # Nothing to tear down.
+# UPDATE/PUT functionality.
+class UpdateMusicianTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_update_valid_musician(self):
+        # Update the musician with ID 2.
+        updated_musician = {
+            "username": "john.smith99",
+            "follower_count": 1,
+            "balance": "20.00",
+            "rating": 4,
+        }
+        self.client.put(
+                path=reverse('microservices:musician-detail',
+                    kwargs={"pk":2}),
+                data=updated_musician,
+                content_type="application/json")
+
+        # Get the newly-updated musician.
+        response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":2}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the musician is updated.
+        json_musician = response.content.decode("utf-8")
+        actual_musician = json.loads(json_musician)
+        expected_musician = updated_musician
+        expected_musician["id"] = 2
+        self.assertEquals(actual_musician, expected_musician)
+
+    def test_update_invalid_musician(self):
+        # Get existing musician with ID 2.
+        old_musician_response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":2}))
+        old_json_musician = old_musician_response.content.decode("utf-8")
+        expected_musician = json.loads(old_json_musician)
+
+        # Try to update the musician with an invalid field.
+        invalid_updated_musician = {
+            "non_existing_field": "foo",
+        }
+        self.client.put(
+                path=reverse('microservices:musician-detail',
+                    kwargs={"pk":2}),
+                data=invalid_updated_musician,
+                content_type="application/json")
+
+        # Get the musician again.
+        new_musician_response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":2}))
+        new_json_musician = new_musician_response.content.decode("utf-8")
+        actual_musician = json.loads(new_json_musician)
+
+        # Check that the musician was not updated.
+        self.assertEquals(actual_musician, expected_musician)
+
+# DELETE/DEL functionality.
+class DeleteMusicianTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_delete_musician(self):
+        # Verify musician with ID of 2 exists before continuing.
+        verify_exists_response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":2}))
+        self.assertEquals(verify_exists_response.status_code, 200)
+
+        # Delete musician with ID of 2.
+        # This returns a 204 No Content response, but there isn't really
+        # a consistent standard among RESTful APIs in regards for what to return
+        # so there's no need to validate this behavior.
+        self.client.delete(reverse('microservices:musician-detail', kwargs={"pk":2}))
+
+        # Check that the musician no longer exists.
+        get_response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":2}))
+        self.assertEquals(get_response.status_code, 404)
 
 # =======================
 # Sample pack test cases.
 # =======================
+# CREATE/POST functionality.
 class CreateSamplePackTestCase(TestCase):
     # Test fixtures loaded here.
     fixtures = ['test_fixture.json']
-
-    def setUp(self):
-        pass
 
     def test_create_valid_samplePack(self):
         # Add a new sample pack.
@@ -158,7 +210,7 @@ class CreateSamplePackTestCase(TestCase):
                 data=pack_to_create,
                 content_type="application/json")
 
-        # Get the newly-created musician.
+        # Get the newly-created musician. Assumes there are 5 sample packs in the DB.
         response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":6}))
 
         # Check that the response HTTP status is 200 OK.
@@ -187,17 +239,10 @@ class CreateSamplePackTestCase(TestCase):
         # Check that the sample pack was not added.
         self.assertEquals(response.status_code, 404)
 
-    def tearDown(self):
-        pass
-
-# RETRIEVE functionality.
-class GetSamplePackDetailsTestCase(TestCase):
+# RETRIEVE/GET functionality.
+class RetrieveSamplePackDetailsTestCase(TestCase):
     # Test fixtures loaded here.
     fixtures = ['test_fixture.json']
-
-    # Setup method is called before each test in this class.
-    def setUp(self):
-        pass # Nothing to set up.
 
     def test_get_existing_samplePack(self):
         # Assumes pack with ID 2 is stored in db from fixture.
@@ -231,17 +276,9 @@ class GetSamplePackDetailsTestCase(TestCase):
         # Check that no such pack exists.
         self.assertEquals(response.status_code, 404)
 
-    # Teardown method is called after each test.
-    def tearDown(self):
-        pass # Nothing to tear down.
-
-class GetSamplePackListTestCase(TestCase):
+class RetrieveSamplePackListTestCase(TestCase):
     # Test fixtures loaded here.
     fixtures = ['test_fixture.json']
-
-    # Setup method is called before each test in this class.
-    def setUp(self):
-        pass # Nothing to set up.
 
     def test_get_samplePack_list(self):
         # Assumes user with pack 2 is stored in db from fixture.
@@ -261,27 +298,90 @@ class GetSamplePackListTestCase(TestCase):
     def tearDown(self):
         pass # Nothing to tear down.
 
-class SamplePackCRUDTestCase(TestCase):
+# UPDATE/PUT functionality.
+class UpdateSamplePackTestCase(TestCase):
     # Test fixtures loaded here.
     fixtures = ['test_fixture.json']
-    # Setup method is called before each test in this class.
-    def setUp(self):
-        pass # Nothing to set up.
+
+    def test_update_valid_samplePack(self):
+        # Update the sample pack with ID 5.
+        updated_pack = {
+            "name": "Some sounds",
+            "description": "What the title says.",
+            "purchase_count": 0,
+            "price": "5.00",
+            "num_samples": 4,
+            "current_seller": None,
+            "buyers": []
+        }
+        self.client.put(
+                path=reverse('microservices:sample-pack-detail',
+                    kwargs={"pk":5}),
+                data=updated_pack,
+                content_type="application/json")
+
+        # Get the newly-updated musician.
+        response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":5}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the sample pack is updated.
+        json_pack = response.content.decode("utf-8")
+        actual_pack = json.loads(json_pack)
+        expected_pack = updated_pack
+        expected_pack["id"] = 5
+        self.assertEquals(actual_pack, expected_pack)
+
+    def test_update_invalid_samplePack(self):
+        # Get existing pack with ID 5.
+        old_pack_response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":5}))
+        old_json_pack = old_pack_response.content.decode("utf-8")
+        expected_pack = json.loads(old_json_pack)
+
+        # Try to add a new invalid sample pack.
+        invalid_updated_pack = {
+            "non_existing_field": "foo",
+        }
+        self.client.put(
+                path=reverse('microservices:sample-pack-detail',
+                    kwargs={"pk":5}),
+                data=invalid_updated_pack,
+                content_type="application/json")
+
+        # Get the newly-updated sample pack.
+        new_pack_response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":5}))
+        new_json_pack = new_pack_response.content.decode("utf-8")
+        actual_pack = json.loads(new_json_pack)
+
+        # Check that the sample pack was not updated.
+        self.assertEquals(actual_pack, expected_pack)
+
+# DELETE/DEL functionality.
+class DeleteSamplePackTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
 
     def test_delete_samplePack(self):
-        #delete sample pack with pk=1
-        delete_data = {
-            'delete-sample-pack': 'Brass sound effects',
-            'pk': '1'
-        }
-        response1 = self.client.post('/sample_packs/1/', delete_data)
-        
-        #check that sample pack is deleted
-        response2 = self.client.get('/sample_packs/1/')
-        self.assertEquals(response2.status_code, 404)
-        
+        # Verify sample pack with ID of 1 exists before continuing.
+        verify_exists_response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":1}))
+        self.assertEquals(verify_exists_response.status_code, 200)
+
+        # Delete sample pack with ID of 1.
+        self.client.delete(reverse('microservices:sample-pack-detail', kwargs={"pk":1}))
+
+        # Check that the sample pack no longer exists.
+        get_response = self.client.get(reverse('microservices:sample-pack-detail', kwargs={"pk":1}))
+        self.assertEquals(get_response.status_code, 404)
 
 # ==================
 # Sample test cases.
 # ==================
-# Insert test cases here.
+# CREATE/POST functionality.
+# ...
+# RETRIEVE/GET functionality.
+# ...
+# UPDATE/PUT functionality.
+# ...
+# DELETE/DEL functionality.
+# ...
