@@ -34,3 +34,14 @@ def home(request):
   }
 
   return JsonResponse(data)
+
+def musician_detail(request, pk):
+  musician = urllib.request.Request('http://models-api:8000/api/musicians/' + str(pk) + '/')
+  json_musician = urllib.request.urlopen(musician).read().decode('utf-8')
+  musician_data = json.loads(json_musician)
+
+  data = {
+    "musician": musician_data,
+  }
+  return JsonResponse(data)
+

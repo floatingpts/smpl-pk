@@ -23,6 +23,9 @@ def pack_detail(request, pk):
 
 def user_detail(request, pk):
     template = loader.get_template('front-layer/user_profile.html')
-    context = {
-    }
+    request_musician = urllib.request.Request('http://exp-api:8000/musician_detail/' + str(pk) + '/')
+    json_musician = urllib.request.urlopen(request_musician).read().decode('utf-8')
+    musician = json.loads(json_musician)
+    context = musician
     return HttpResponse(template.render(context, request))
+
