@@ -20,3 +20,9 @@ def pack_detail(request, pk):
     pack = json.loads(json_pack)
     context = pack
     return HttpResponse(template.render(context, request))
+
+def user_detail(request, pk):
+    template = loader.get_template('front-layer/user_profile.html')
+    context = {
+    }
+    return HttpResponse(template.render(context, request))
