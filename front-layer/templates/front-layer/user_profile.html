@@ -6,6 +6,7 @@
   {% extends 'front-layer/base.html' %}
   
   {% block content %}
+    <h1>{{ musician.username }}</h1>
     <div>
       <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#info">Info</a></li>
@@ -16,7 +17,8 @@
       <div class="tab-content">
         <div id="info" class="tab-pane fade in active">
           <h3>Musician Information</h3>
-          <p>Some content.</p>
+          <p>Follower Count: {{ musician.follower_count }}</p>
+	  <p>Rating: {{ musician.rating }}</p>
         </div>
         <div id="topPacks" class="tab-pane fade">
           <h3>Most Popular Sample Packs</h3>
