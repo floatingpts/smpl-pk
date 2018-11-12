@@ -7,7 +7,7 @@ class ListingForm(forms.Form):
     price = forms.DecimalField(label='Price', max_digits=5, decimal_places=2)
     num_samples = forms.IntegerField('Number of Samples', default=0)
 
-class Musician(forms.Form):
+class MusicianForm(forms.Form):
     username = forms.CharField(label='Username', max_length=25)
     password = forms.CharField(label='Password', max_length=1000)
     
