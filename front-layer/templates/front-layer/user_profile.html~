@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!–– I copied and modified an example of dynamic tabs from https://www.w3schools.com/bootstrap/bootstrap_tabs_pills.asp and https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_tabs_dynamic&stacked=h-->
+
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div>
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+        <li><a data-toggle="tab" href="#menu1">Menu 1</a></li>
+        <li><a data-toggle="tab" href="#menu2">Menu 2</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <div id="home" class="tab-pane fade in active">
+          <h3>Info</h3>
+          <p>Some content.</p>
+        </div>
+        <div id="menu1" class="tab-pane fade">
+          <h3>Top Packs</h3>
+          <p>Some content in menu 1.</p>
+        </div>
+        <div id="menu2" class="tab-pane fade">
+          <h3>All Packs</h3>
+          <p>Some content in menu 2.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

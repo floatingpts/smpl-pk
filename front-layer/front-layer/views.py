@@ -20,3 +20,8 @@ def pack_detail(request, pk):
     pack = json.loads(json_pack)
     context = pack
     return HttpResponse(template.render(context, request))
+
+def login(request):
+    if request.method == 'GET':
+        #display login form
+        return render(request, 'login.html')

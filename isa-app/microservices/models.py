@@ -7,7 +7,6 @@ import datetime
 
 class Musician(models.Model):
     username = models.CharField(max_length=25)
-    password = models.CharField(max_length=1000)
     follower_count = models.IntegerField(default=0)
     balance = models.DecimalField(max_digits=11, decimal_places=2)
     rating = models.IntegerField(blank=True, null=True)
@@ -16,8 +15,8 @@ class Musician(models.Model):
         return self.id
 
 class Authenticator(models.Model):
+    user_id = models.CharField(max_length=25)
     authenticator = models.IntegerField(primary_key = True)
-    user_id = models.IntegerField()
     date_created = models.DateField()
 
 
