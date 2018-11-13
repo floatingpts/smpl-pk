@@ -45,3 +45,36 @@ def musician_detail(request, pk):
   }
   return JsonResponse(data)
 
+def login(username, password):
+  # Pass info along to model API via a POST request with form data.
+  user = {
+    "username": username,
+    "password": password,
+  }
+  # Check if info was correct (stored in the database).
+  # ...
+  # Return a JsonResponse to the front-end specifying whether log-in was successful, with the authenticator included.
+  pass
+
+def logout(authenticator):
+  # Pass authenticator to model API for verification.
+  # ...
+  # Return a JsonResponse specifying whether log-out was successful.
+  # ...
+  pass
+
+def create_account(username, password):
+  # Pass info along to model API.
+  # ...
+  # Check if info does not exist, validate password. Model API will add user to database.
+  # ...
+  # Return a JsonReponse to the front-end specifying whether account creation was successful, with the new authenticator included.
+  pass
+
+def create_listing(authenticator, data):
+  # Pass authenticator to model API for verification.
+  # ...
+  # Pass data along to model API to create a new entry.
+  # ...
+  # Return a JsonResponse to the front-end specifying whether creation was successful and user was logged-in.
+  pass
