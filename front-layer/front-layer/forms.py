@@ -3,8 +3,8 @@ from django import forms
 
 class ListingForm(forms.Form):
     name = forms.CharField(label='Name', max_length=50)
-    description = forms.TextField(label='Description', max_length=1000)
-    price = models.DecimalField(label='Price', max_digits=5, decimal_places=2)
+    description = forms.CharField(label='Description', max_length=1000, widget=forms.Textarea)
+    price = forms.DecimalField(label='Price', max_digits=5, decimal_places=2)
 
 
 class MusicianForm(forms.Form):

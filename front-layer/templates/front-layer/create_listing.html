@@ -1,0 +1,29 @@
+<head>
+    <title>Add Listing</title>
+</head>
+
+{% extends 'front-layer/base.html' %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="panel panel-primary" style="width: 650px">
+      <div class="panel-heading">
+	Create New Listing
+      </div>
+      <div class="panel-body">
+	<form method="post" action="{% url 'create_listing' %}">
+	  {% csrf_token %}
+	  {% for field in form %}
+	  <label>{{ field.label_tag }}</label>
+	  <br>
+	  {{ field }}
+	  <br>
+	  <br>
+	  {% endfor %}
+	    <input class="btn btn-success" type="submit" value="Submit" style="margin:auto"/>
+	</form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

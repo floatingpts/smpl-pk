@@ -22,24 +22,33 @@ def pack_detail(request, pk):
     context = pack
     return HttpResponse(template.render(context, request))
 
+def user_detail(request, pk):
+    template = loader.get_template('front-layer/musician_detail.html')
+    request_musician = urllib.request.Request('http://exp-api:8000/musician_detail/' + str(pk) + '/')
+    json_musician = urllib.request.urlopen(request_pack).read().decode('utf-8')
+    musician = json.loads(json_musician)
+    context = musician
+    return HttpResponse(template.render(context, request))
+
 def login(request):
     if request.method == 'GET':
         #display login form
-        return render(request, 'login.html')
+        form = MusicianForm()
+        return render(request, 'front-layer/login.html', {'form':form})
     # Create new Musician form instance
     form = MusicianForm(request.POST)
     
     # Check if form is valid
     if not form.is_valid():
         #Form error, send back to login page with an error ADD ERROR
-        return render('login.html')
+        return render(request, 'front-layer/login.html', {'form':form})
 
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
 
     # Get next page. Currently automatically goes to home page
-    next = reverse('home')
+    next = reverse('front-layer/home')
 
     # Send form data to exp layer
     # ADD ONCE EXP VIEW DONE!!!
@@ -52,8 +61,8 @@ def login(request):
     return response
 
 def logout(request):
-    response = HttpResponseRedirect(reverse('home'))
-    response.delete_cookie(#'COOKIE NAME HERE')
+    response = HttpResponseRedirect(reverse('front-layer/home'))
+    response.delete_cookie()#'COOKIE NAME HERE IN ()'
     return response
 
 def create_listing(request):
@@ -64,7 +73,8 @@ def create_listing(request):
     #GET request
     if request.method == 'GET':
         #Display form page
-        return render("create_listing.html")
+        form = ListingForm()
+        return render(request, "front-layer/create_listing.html", {'form':form})
 
     #Otherwise, create new form instance
     form = ListingForm(request.POST)
@@ -80,25 +90,26 @@ def create_listing(request):
     #Check if exp response says we passed incorrect info
     #ADD ONCE EXP DONE!!!
 
-    return render("create_listing_success.html")
+    return render(request, "front-layer/create_listing_success.html")
 
 def create_account(request):
     if request.method == 'GET':
         #display signup form
-        return render(request, 'create_account.html')
+        form = MusicianForm()
+        return render(request, 'front-layer/create_account.html', {'form':form})
     # Create new Musician form instance
     form = MusicianForm(request.POST)
     
     # Check if form is valid
     if not form.is_valid():
         #Form error, send back to sign-up page with an error ADD ERROR
-        return render('create_account.html')
+        return render('front-layer/create_account.html')
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
 
     # Get next page. Currently automatically goes to home page
-    next = reverse('home')
+    next = reverse('front-layer/home')
 
     # Send form data to exp layer
     # ADD ONCE EXP VIEW DONE!!!

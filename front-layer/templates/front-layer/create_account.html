@@ -1,0 +1,32 @@
+<head>
+    <title>Sign up</title>
+</head>
+
+{% extends 'front-layer/base.html' %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="login-panel panel panel-default" style="position:absolute;right:50%">
+      <div class="panel-heading" style="text-align:center">
+	<h3 class="panel-title">Create Account</h3>
+      </div>
+      <div class="panel-body" style="text-align:center">
+	<form method="post" action="{% url 'login' %}">
+	  {% csrf_token %}
+	  <p class="bs-component">
+	    {% for field in form %}
+	    <label>{{ field.label_tag }}</label>
+	    {{ field }}
+	    <br>
+	    <br>
+	    {% endfor %}
+	  </p>
+	  <p class="bs-component">
+	    <input class="btn btn-success btn-sm" type="submit" value="Submit" style="margin:auto"/>
+	  </p>
+	</form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
