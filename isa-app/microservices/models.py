@@ -7,6 +7,8 @@ import datetime
 
 class Musician(models.Model):
     username = models.CharField(max_length=25)
+    password = models.CharField(max_length=50)
+    email = models.CharField(max_length=25)
     follower_count = models.IntegerField(default=0)
     balance = models.DecimalField(max_digits=11, decimal_places=2)
     rating = models.IntegerField(blank=True, null=True)
