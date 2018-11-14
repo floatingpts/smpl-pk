@@ -4,6 +4,8 @@
   "pk": 2,
   "fields": {
     "username": "you",
+    "email": "com@example.com",
+    "password": "password",
     "follower_count": 19000,
     "balance": "5555555.55",
     "rating": 5

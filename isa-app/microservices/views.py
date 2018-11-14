@@ -148,4 +148,45 @@ def top5_sample_packs(request):
     serializer = SamplePackSerializer(samplePacks, many=True)
     return JsonResponse(serializer.data, safe=False)
 
+@csrf_exempt
+def authenticator_list(request):
+	if request.method == 'GET':
+		authenticators = Authenticator.objects.all()
+		serializer = AuthenticatorSerializer(authenticators, many=True)
+		return JsonResponse(serializer.data, safe=False)
+
+	if request.method == 'POST':
+		data = JSONParser().parse(request)
+		serializer = AuthenticatorSerializer(data=data)
+		if serializer.is_valid():
+			serializer.save()
+			return JsonResponse(serializer.data, status=201)
+		return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def authenticator_detail(request, pk):
+	"""
+	CRUD methods for Authenticator model
+	"""
+	try:
+		authenticator = Authenticator.objects.get(pk=pk)
+	except Authenticator.DoesNotExist:
+		return HttpResponse(status=404)
+
+	if request.method == 'GET':
+		serializer = AuthenticatorSerializer(authenticator)
+		return JsonResponse(serializer.data)
+
+	elif request.method == 'PUT':
+		data = JSONParser().parse(request)
+		serializer = AuthenticatorSerializer(authenticator, data=data)
+		if serializer.is_valid():
+			serializer.save()
+			return JsonResponse(serializer.data)
+		return JsonResponse(serializer.errors, status=400)
+
+	elif request.method == 'DELETE':
+		authenticator.delete()
+		return HttpResponse(status=204)
+
 
