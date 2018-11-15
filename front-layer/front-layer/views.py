@@ -46,29 +46,34 @@ def login(request):
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
+    form_data = {'username': username, 'password': password}
+    data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
 
     # Get next page. Currently automatically goes to home page
     next = reverse('front-layer/home')
 
     # Send form data to exp layer
-    # ADD ONCE EXP VIEW DONE!!!
-    # ADD CHECKING EXP RESPONSE!!!
+    response = urllib.request.Request('http://exp-api:8000/login/', data=data_encoded, method='POST')
+    # Check that exp layer says form data ok
+    #ADD!!!!!
 
     # Can now log user in, set login cookie
-    #ADD ONCE EXP VIEW DONE!!
+    authenticator = response['response']['authenticator']
     response = HttpResponseRedirect(next)
-    #ADD ONCE EXP VIEW DONE!!
+    response.set_cookie("authenticator", authenticator)
     return response
 
 def logout(request):
     response = HttpResponseRedirect(reverse('front-layer/home'))
-    response.delete_cookie()#'COOKIE NAME HERE IN ()'
+    response.delete_cookie('authenticator')
     return response
 
 def create_listing(request):
     #set cookie assigns a string name, use this name to try to get cookie
-    #ADD COOKIE GET
-    #ADD CORRECTION FOR NOT LOGGED IN USER
+    authenticator = request.COOKIES.get('authenticator')
+    #if user not logged in
+    if not authenticator:
+        return HttpResponseRedirect(reverse("login"))
     
     #GET request
     if request.method == 'GET':
@@ -83,9 +88,11 @@ def create_listing(request):
     name = form.cleaned_data['name']
     description = form.cleaned_data['description']
     price = form.cleaned_data['price']
+    form_data = {'name': name, 'description': description, 'price': price, 'authenticator': authenticator}
 
     #Send form data to exp layer
-    #ADD ONCE EXP DONE!!!
+    data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
+    response = urllib.request.Request('http://exp-api:8000/create_listing/', data=data_encoded, method='POST')
 
     #Check if exp response says we passed incorrect info
     #ADD ONCE EXP DONE!!!
@@ -107,18 +114,20 @@ def create_account(request):
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
+    form_data = {'username': username, 'password': password}
 
     # Get next page. Currently automatically goes to home page
     next = reverse('front-layer/home')
 
     # Send form data to exp layer
-    # ADD ONCE EXP VIEW DONE!!!
+    data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
+    response = urllib.request.Request('http://exp-api:8000/create_listing/', data=data_encoded, method='POST')
     # ADD CHECKING EXP RESPONSE!!!
 
     # Can now log user in, set login cookie
-    #ADD ONCE EXP VIEW DONE!!
+    authenticator = response['response']['authenticator']
     response = HttpResponseRedirect(next)
-    #ADD ONCE EXP VIEW DONE!!
+    response.set_cookie("authenticator", authenticator)
     return response
 
     
