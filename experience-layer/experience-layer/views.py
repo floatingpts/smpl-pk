@@ -55,7 +55,7 @@ def login(username, password):
   response = urllib.request.Request('http://models-api:8000/api/musician_login/', data=user)
   # Check if info was correct (stored in the database).
   if response.status_code == 404:
-    return NULL
+    return None
   else:
     return response
 

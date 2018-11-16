@@ -5,6 +5,17 @@
 {% extends 'front-layer/base.html' %}
 {% block content %}
 <div class="container">
+  {% if form.errors %}
+    <div class="alert alert-danger">
+    {% for field in form.errors %}
+      field
+      <br>
+    {% endfor %}
+    </div>
+  {% endif %}
+  {% if error != '' %}
+    <div class="alert alert-danger">error</div>
+  {% endif %}
   <div class="row">
     <div class="login-panel panel panel-default" style="position:absolute;right:50%">
       <div class="panel-heading" style="text-align:center">

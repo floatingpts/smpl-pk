@@ -34,14 +34,14 @@ def login(request):
     if request.method == 'GET':
         #display login form
         form = MusicianForm()
-        return render(request, 'front-layer/login.html', {'form':form})
+        return render(request, 'front-layer/login.html', {'form':form, 'error': ''})
     # Create new Musician form instance
     form = MusicianForm(request.POST)
     
     # Check if form is valid
     if not form.is_valid():
-        #Form error, send back to login page with an error ADD ERROR
-        return render(request, 'front-layer/login.html', {'form':form})
+        #Form error, send back to login page with form errors
+        return render(request, 'front-layer/login.html', {'form':form, 'error': ''})
 
     # Get form data
     username = form.cleaned_data['username']
@@ -50,12 +50,14 @@ def login(request):
     data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
 
     # Get next page. Currently automatically goes to home page
-    next = reverse('front-layer/home')
+    next = 'front-layer/home'
 
     # Send form data to exp layer
     response = urllib.request.Request('http://exp-api:8000/login/', data=data_encoded, method='POST')
     # Check that exp layer says form data ok
-    #ADD!!!!!
+    if response == None:
+        error = "Incorrect username or password"
+        return render(request, 'front-layer/login.html', {'form':form, 'error':error})
 
     # Can now log user in, set login cookie
     authenticator = response['response']['authenticator']
