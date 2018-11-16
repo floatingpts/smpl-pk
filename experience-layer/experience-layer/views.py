@@ -46,18 +46,25 @@ def musician_detail(request, pk):
   }
   return JsonResponse(data)
 
-def login(username, password):
+def login(user):
   # Pass info along to model API via a POST request with form data.
-  user = {
-    "username": username,
-    "password": password,
-  }
+  #user = {
+  #  "username": username,
+  #  "password": password,
+  #}
   response = urllib.request.Request('http://models-api:8000/api/musician_login/', data=user)
+  json_auth = urllib.request.urlopen(response).read().decode('utf-8')
+  auth_data = json.loads(json_auth)
+
+  data = {
+    "response": auth_data,
+  }
+
   # Check if info was correct (stored in the database).
   if response.status_code == 404:
     return None
   else:
-    return response
+    return JsonResponse(data)
 
 def logout(authenticator):
   # Pass authenticator to model API for verification.

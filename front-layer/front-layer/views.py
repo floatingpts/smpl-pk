@@ -35,9 +35,10 @@ def login(request):
         #display login form
         form = MusicianForm()
         return render(request, 'front-layer/login.html', {'form':form, 'error': ''})
+
     # Create new Musician form instance
     form = MusicianForm(request.POST)
-    
+
     # Check if form is valid
     if not form.is_valid():
         #Form error, send back to login page with form errors
@@ -60,7 +61,9 @@ def login(request):
         return render(request, 'front-layer/login.html', {'form':form, 'error':error})
 
     # Can now log user in, set login cookie
-    authenticator = response['response']['authenticator']
+    returned_json = urllib.request.urlopen(response).read().decode("utf-8")
+    returned_authentication = json.loads(returned_json)
+    authenticator = returned_authentication["response"]["authenticator"]
     response = HttpResponseRedirect(next)
     response.set_cookie("authenticator", authenticator)
     return response
@@ -76,7 +79,7 @@ def create_listing(request):
     #if user not logged in
     if not authenticator:
         return HttpResponseRedirect(reverse("login"))
-    
+
     #GET request
     if request.method == 'GET':
         #Display form page
@@ -108,7 +111,7 @@ def create_account(request):
         return render(request, 'front-layer/create_account.html', {'form':form})
     # Create new Musician form instance
     form = MusicianForm(request.POST)
-    
+
     # Check if form is valid
     if not form.is_valid():
         #Form error, send back to sign-up page with an error ADD ERROR
@@ -132,4 +135,4 @@ def create_account(request):
     response.set_cookie("authenticator", authenticator)
     return response
 
-    
+
