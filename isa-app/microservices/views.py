@@ -3,10 +3,23 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+import datetime
 from .models import *
 from .serializers import *
+import os
+import hmac
 
-# Create your views here.
+# import django settings file
+import microservices.settings
+
+@csrf_exempt
+def generate_auth(pk):
+	auth = hmac.new(
+		key = settings.SECRET_KEY.encode('utf-8'), 
+		msg = os.urandom(32), 
+		digestmod = 'sha256',
+	).hexdigest()
+	return auth
 
 @csrf_exempt
 def musician_list(request):
@@ -22,6 +35,24 @@ def musician_list(request):
 			serializer.save()
 			return JsonResponse(serializer.data, status=201)
 		return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def musician_login(request, name, hashed_pass):
+	try:
+		musician = Musician.objects.get(username=name, password=hashed_pass)
+		# Generate random auth string
+		auth = generate_auth()
+		# Check that this random string not already used
+		while(Authenticator.objects.filter(authenticator=auth).exists()):
+			auth = generate_auth()
+		# We now know that string stored in auth is unique,
+		# so create new authenticator object
+		new_auth = Authenticator.objects.create(user_id=musician.pk, authenticator=auth, date_created=datetime.date.today())
+		new_auth.save()
+		return new_auth
+
+	except Musician.DoesNotExist:
+		return HttpResponse(status=404)
 
 @csrf_exempt
 def musician_detail(request, pk):

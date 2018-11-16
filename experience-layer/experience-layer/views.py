@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+import django.contrib.auth.hashers
 from django.http import JsonResponse
 import urllib.request
 import urllib.parse
@@ -51,10 +52,12 @@ def login(username, password):
     "username": username,
     "password": password,
   }
+  response = urllib.request.Request('http://models-api:8000/api/musician_login/', data=user)
   # Check if info was correct (stored in the database).
-  # ...
-  # Return a JsonResponse to the front-end specifying whether log-in was successful, with the authenticator included.
-  pass
+  if response.status_code == 404:
+    return NULL
+  else:
+    return response
 
 def logout(authenticator):
   # Pass authenticator to model API for verification.
@@ -64,8 +67,14 @@ def logout(authenticator):
   pass
 
 def create_account(username, password):
+  # Create hashed version of password
+  hashed_password = make_password(password)
   # Pass info along to model API.
-  # ...
+  user = {
+    "username": username,
+    "password": hashed_password,
+  }
+  response = urllib.request.Request('http://models-api:8000/api/mu', data=user, method='PUT')
   # Check if info does not exist, validate password. Model API will add user to database.
   # ...
   # Return a JsonReponse to the front-end specifying whether account creation was successful, with the new authenticator included.
