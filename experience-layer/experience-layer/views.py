@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 import django.contrib.auth.hashers
 from django.http import JsonResponse
 import urllib.request
@@ -46,6 +47,7 @@ def musician_detail(request, pk):
   }
   return JsonResponse(data)
 
+@csrf_exempt
 def login(user):
   # Pass info along to model API via a POST request with form data.
   #user = {

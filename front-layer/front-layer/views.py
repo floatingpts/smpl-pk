@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.template import loader
 from .forms import *
@@ -30,6 +31,7 @@ def user_detail(request, pk):
     context = musician
     return HttpResponse(template.render(context, request))
 
+@csrf_exempt
 def login(request):
     if request.method == 'GET':
         #display login form
