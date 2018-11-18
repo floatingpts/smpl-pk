@@ -37,7 +37,7 @@ def login(request):
     if request.method == 'GET':
         # Display login form
         form = MusicianForm()
-        return render(request, 'front-layer/login.html', {'form':form, 'error': ''})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': ''})
 
     # Create new Musician form instance
     form = MusicianForm(request.POST)
@@ -45,7 +45,7 @@ def login(request):
     # Check if form is valid
     if not form.is_valid():
         #Form error, send back to login page with form errors
-        return render(request, 'front-layer/login.html', {'form':form, 'error': ''})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': ''})
 
     # Get form data
     username = form.cleaned_data['username']
@@ -74,9 +74,16 @@ def login(request):
     return response
 
 def logout(request):
-    response = HttpResponseRedirect(reverse('front-layer/home'))
-    response.delete_cookie('authenticator')
-    return response
+    # Send cookie to exp layer.
+    response = urllib.request.Request('http://exp-api:8000/logout/')
+    # Redirect client back home.
+    home = HttpResponseRedirect(reverse('home'))
+    # Delete cookie from client if present. We're just going to assume log-out
+    # was successful, as otherwise we might have a cookie with no corresponding
+    # authenticator. Worst case we have an authenticator in the database with no
+    # cookie attached, which will be periodically wiped.
+    home.delete_cookie('authenticator')
+    return home
 
 def create_listing(request):
     #set cookie assigns a string name, use this name to try to get cookie

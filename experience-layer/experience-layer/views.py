@@ -64,15 +64,31 @@ def login(request):
   # Return the authenticator.
   data = {
     "response": auth_data,
+    "success": True
   }
   return JsonResponse(data)
 
-def logout(authenticator):
-  # Pass authenticator to model API for verification.
-  # ...
-  # Return a JsonResponse specifying whether log-out was successful.
-  # ...
-  pass
+def logout(request):
+    # Get authenticator from cookie.
+    cookies = request.COOKIES
+    auth = cookies["authenticator"]
+    encoded_auth = urllib.parse.urlencode(auth).encode('utf-8')
+
+    # Pass authenticator to model API for verification (RESTful-ness not important here).
+    response_request = urllib.request.Request('http://models-api:8000/api/musician_logout/', data=encoded_auth)
+    response = urllib.request.urlopen(response_request)
+
+    # Return a response specifying whether log-out was successful, depending on status code.
+    data = {}
+    if response.status == 205:
+        data["success"] = True
+    elif response.status == 404:
+        data["success"] = False
+        data["error"] = "The user trying to log-out is not logged in."
+    else:
+        data["success"] = False
+        data["error"] = "Unknown code %d" % response.status
+    return JsonResponse(data)
 
 def create_account(username, password):
   # Create hashed version of password
