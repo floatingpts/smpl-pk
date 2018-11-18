@@ -50,19 +50,22 @@ def musician_detail(request, pk):
 @csrf_exempt
 def login(request):
   # Pass info along to model API via a POST request with form data.
-  response = urllib.request.Request('http://models-api:8000/api/musician_login/')
-  json_auth = urllib.request.urlopen(response).read().decode('utf-8')
-  auth_data = json.loads(json_auth)
+  response_request = urllib.request.Request('http://models-api:8000/api/musician_login/', data=request.body, method='POST')
+  response = urllib.request.urlopen(response_request)
 
+  # Check if info was stored in database.
+  if response.status == 404:
+    return None
+
+  # Decode the response.
+  decoded_response = response.read().decode('utf-8')
+  auth_data = json.loads(decoded_response)
+
+  # Return the authenticator.
   data = {
     "response": auth_data,
   }
-
-  # Check if info was correct (stored in the database).
-  if response.status_code == 404:
-    return None
-  else:
-    return JsonResponse(data)
+  return JsonResponse(data)
 
 def logout(authenticator):
   # Pass authenticator to model API for verification.

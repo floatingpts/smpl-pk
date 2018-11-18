@@ -41,30 +41,32 @@ def musician_list(request):
 @csrf_exempt
 def musician_login(request):
     if request.method == 'POST':
-        try:
-            # Decode form-encoded user information from request key-value pairs.
-            user_query = request.POST
-            # Django gives us a QueryDict for the POST body.
-            name = user_query.get('username')
-            hashed_pass = user_query.get('password')
-            # Get the user.
-            musician = Musician.objects.get(username=name, password=hashed_pass)
-            # Generate random auth string.
-            auth = generate_auth()
-            # Check that this random string not already used.
-            while(Authenticator.objects.filter(authenticator=auth).exists()):
-                auth = generate_auth()
-            # We now know that string stored in auth is unique, so create new authenticator object.
-            new_auth = Authenticator.objects.create(
-                user_id=musician.get('id'),
-                authenticator=auth,
-                date_created=datetime.date.today())
-            new_auth.save()
-            serializer = AuthenticatorSerializer(new_auth)
-            return JsonResponse(serializer.data)
+        # Decode form-encoded user information from request key-value pairs.
+        user_query = request.POST
+        # Django gives us a QueryDict for the POST body.
+        name = user_query.get('username')
+        hashed_pass = user_query.get('password')
 
-        except Musician.DoesNotExist:
-            return HttpResponse(status=404)
+        # Get the user.
+        #try:
+        musician = Musician.objects.get(username=name, password=hashed_pass)
+        #except Musician.DoesNotExist:
+        #    # Could not find the user.
+        #    return HttpResponse(status=404)
+
+        # Generate random auth string.
+        auth = generate_auth()
+        # Check that this random string not already used.
+        while(Authenticator.objects.filter(authenticator=auth).exists()):
+            auth = generate_auth()
+        # We now know that string stored in auth is unique, so create new authenticator object.
+        new_auth = Authenticator.objects.create(
+            user_id=musician.pk,
+            authenticator=auth,
+            date_created=datetime.date.today())
+        new_auth.save()
+        serializer = AuthenticatorSerializer(new_auth)
+        return JsonResponse(serializer.data)
 
     else:
         # We want the API to be called as a POST request with the arguments.

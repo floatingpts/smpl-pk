@@ -3,7 +3,8 @@
   "model": "microservices.musician",
   "pk": 2,
   "fields": {
-    "username": "you",
+    "username": "daedrika",
+    "password": "donthackme",
     "follower_count": 19000,
     "balance": "5555555.55",
     "rating": 5
