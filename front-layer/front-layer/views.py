@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.template import loader
@@ -65,11 +65,11 @@ def login(request):
         return render(request, 'front-layer/login.html', {'form': form, 'error': error})
 
     # Can now log user in, set login cookie
-    # returned_json = urllib.request.urlopen(response).read().decode("utf-8")
-    # returned_authentication = json.loads(returned_json)
-    # authenticator = returned_authentication["response"]["authenticator"]
+    returned_json = urllib.request.urlopen(response).read().decode("utf-8")
+    returned_authentication = json.loads(returned_json)
+    authenticator = returned_authentication["response"]["authenticator"]
     response = HttpResponseRedirect(next_page)
-    # response.set_cookie("authenticator", authenticator)
+    response.set_cookie("authenticator", authenticator)
 
     return response
 
