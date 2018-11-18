@@ -21,5 +21,4 @@ class SampleSerializer(serializers.ModelSerializer):
 class AuthenticatorSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Authenticator
-fields = ('authenticator', 'user_id', 'date_created')
-
+		fields = ('authenticator', 'user_id', 'date_created')

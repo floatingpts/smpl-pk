@@ -18,7 +18,7 @@ class Musician(models.Model):
 
 class Authenticator(models.Model):
     user_id = models.CharField(max_length=25)
-    authenticator = models.IntegerField(primary_key = True)
+    authenticator = models.CharField(max_length=255, primary_key=True)
     date_created = models.DateField()
 
 
@@ -42,5 +42,3 @@ class Sample(models.Model):
 
     def __str__(self):
         return self.name
-
-

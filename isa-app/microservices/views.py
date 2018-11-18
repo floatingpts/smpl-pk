@@ -8,16 +8,19 @@ from .models import *
 from .serializers import *
 import os
 import hmac
+import urllib.request
+import urllib.parse
 
 # import django settings file
-import microservices.settings
+from . import settings
 
 @csrf_exempt
-def generate_auth(pk):
+def generate_auth():
   auth = hmac.new(
-       key = settings.SECRET_KEY.encode('utf-8'),
-       msg = os.urandom(32),
-       digestmod = 'sha256',).hexdigest()
+          key = settings.SECRET_KEY.encode('utf-8'),
+          msg = os.urandom(32),
+          digestmod = 'sha256',
+      ).hexdigest()
   return auth
 
 @csrf_exempt
@@ -36,31 +39,37 @@ def musician_list(request):
   return JsonResponse(serializer.errors, status=400)
 
 @csrf_exempt
-def musician_login(request, encoded_user):
-  try:
-    # Decode form-encoded user information
-    # Use urllib's method to decode a query string (using default UTF8 encoding) 
-    user = urllib.parse.parse_qs(encoded_user)
-    name = user["username"]
-    hashed_pass = user["password"]
-    # Get the user
-    musician = Musician.objects.filter(username=name, password=hashed_pass)
-    # Generate random auth string
-    auth = generate_auth()
-    # Check that this random string not already used
-    while(Authenticator.objects.filter(authenticator=auth).exists()):
-      auth = generate_auth()
-    # We now know that string stored in auth is unique, so create new authenticator object
-    new_auth = Authenticator.objects.create(
-            user_id=musician.pk,
-            authenticator=auth,
-            date_created=datetime.date.today())
-    new_auth.save()
-    serializer = AuthenticatorSerializer(new_auth)
-    return JsonResponse(serializer.data)
+def musician_login(request):
+    if request.method == 'POST':
+        try:
+            # Decode form-encoded user information from request key-value pairs.
+            user_query = request.POST
+            # Django gives us a QueryDict for the POST body.
+            name = user_query.get('username')
+            hashed_pass = user_query.get('password')
+            # Get the user.
+            musician = Musician.objects.get(username=name, password=hashed_pass)
+            # Generate random auth string.
+            auth = generate_auth()
+            # Check that this random string not already used.
+            while(Authenticator.objects.filter(authenticator=auth).exists()):
+                auth = generate_auth()
+            # We now know that string stored in auth is unique, so create new authenticator object.
+            new_auth = Authenticator.objects.create(
+                user_id=musician.get('id'),
+                authenticator=auth,
+                date_created=datetime.date.today())
+            new_auth.save()
+            serializer = AuthenticatorSerializer(new_auth)
+            return JsonResponse(serializer.data)
 
-  except Musician.DoesNotExist:
-    return HttpResponse(status=404)
+        except Musician.DoesNotExist:
+            return HttpResponse(status=404)
+
+    else:
+        # We want the API to be called as a POST request with the arguments.
+        # >>> 501 Error Code: Not Implemented (i.e. wrong request).
+        return HttpResponse(status=501)
 
 @csrf_exempt
 def musician_detail(request, pk):
@@ -227,5 +236,3 @@ def authenticator_detail(request, pk):
 	elif request.method == 'DELETE':
 		authenticator.delete()
 		return HttpResponse(status=204)
-
-
