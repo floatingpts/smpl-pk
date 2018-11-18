@@ -13,8 +13,8 @@
     {% endfor %}
     </div>
   {% endif %}
-  {% if error != '' %}
-    <div class="alert alert-danger">error</div>
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
   {% endif %}
   <div class="row">
     <div class="login-panel panel panel-default" style="position:absolute;right:50%">

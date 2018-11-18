@@ -4,6 +4,7 @@ import django.contrib.auth.hashers
 from django.http import JsonResponse
 import urllib.request
 import urllib.parse
+import urllib.error
 import json
 
 def samplePack_details(request, pk):
@@ -51,11 +52,22 @@ def musician_detail(request, pk):
 def login(request):
   # Pass info along to model API via a POST request with form data.
   response_request = urllib.request.Request('http://models-api:8000/api/musician_login/', data=request.body, method='POST')
-  response = urllib.request.urlopen(response_request)
-
-  # Check if info was stored in database.
-  if response.status == 404:
-    return None
+  try:
+    response = urllib.request.urlopen(response_request)
+  except urllib.error.HTTPError as e:
+    if e.code == 404:
+      # This is expected if user is not found, can't return auth.
+      data = {
+        "success": False,
+        "error": "Incorrect username or password.",
+      }
+      return JsonResponse(data)
+    else:
+      data = {
+        "success": False,
+        "error": "Unknown error code %s." % e.code,
+      }
+      return JsonResponse(data)
 
   # Decode the response.
   decoded_response = response.read().decode('utf-8')
@@ -64,30 +76,37 @@ def login(request):
   # Return the authenticator.
   data = {
     "response": auth_data,
-    "success": True
+    "success": True,
   }
   return JsonResponse(data)
 
 def logout(request):
-    # Get authenticator from cookie.
-    cookies = request.COOKIES
-    auth = cookies["authenticator"]
-    encoded_auth = urllib.parse.urlencode(auth).encode('utf-8')
-
-    # Pass authenticator to model API for verification (RESTful-ness not important here).
-    response_request = urllib.request.Request('http://models-api:8000/api/musician_logout/', data=encoded_auth)
-    response = urllib.request.urlopen(response_request)
+    # Get authenticator from front-end.
+    logout_info = request.GET
+    auth = logout_info['authenticator']
+    url = 'http://models-api:8000/api/musician_logout/?authenticator=%s' % auth
+    # Pass authenticator to model API for verification.
+    response_request = urllib.request.Request(url)
+    try:
+        response = urllib.request.urlopen(response_request)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            data = {
+              "success": False,
+              "error": "User could not be found (is not logged in).",
+            }
+            return JsonResponse(data)
+        else:
+            data = {
+              "success": False,
+              "error": "Unknown error code %s." % e.code,
+            }
+            return JsonResponse(data)
 
     # Return a response specifying whether log-out was successful, depending on status code.
-    data = {}
-    if response.status == 205:
-        data["success"] = True
-    elif response.status == 404:
-        data["success"] = False
-        data["error"] = "The user trying to log-out is not logged in."
-    else:
-        data["success"] = False
-        data["error"] = "Unknown code %d" % response.status
+    data = {
+        "success": True,
+    }
     return JsonResponse(data)
 
 def create_account(username, password):

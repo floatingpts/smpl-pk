@@ -108,7 +108,7 @@ def musician_logout(request):
 
     # Retrieve the authenticator.
     try:
-        Authenticator.objects.get(authenticator=auth)
+        authenticator = Authenticator.objects.get(authenticator=auth)
     except Authenticator.DoesNotExist:
         # Could not find the authenticator for the user.
         return HttpResponse(status=404)

@@ -57,26 +57,31 @@ def login(request):
     next_page = form.cleaned_data.get('next') or reverse('home')
 
     # Send form data to exp layer
-    response = urllib.request.Request('http://exp-api:8000/login/', data=encoded_data, method='POST')
+    response_request = urllib.request.Request('http://exp-api:8000/login/', data=encoded_data, method='POST')
+
+    # Get response back and convert from JSON.
+    json_response = urllib.request.urlopen(response_request).read().decode("utf-8")
+    response = json.loads(json_response)
 
     # Check that exp layer says form data ok
-    if not response:
-        error = "Incorrect username or password"
+    if not response["success"]:
+        error = response["error"]
         return render(request, 'front-layer/login.html', {'form': form, 'error': error})
 
     # Can now log user in, set login cookie
-    returned_json = urllib.request.urlopen(response).read().decode("utf-8")
-    returned_authentication = json.loads(returned_json)
-    authenticator = returned_authentication["response"]["authenticator"]
+    authenticator = response["response"]["authenticator"]
     response = HttpResponseRedirect(next_page)
     response.set_cookie("authenticator", authenticator)
 
     return response
 
 def logout(request):
-    # Send cookie to exp layer.
-    response = urllib.request.Request('http://exp-api:8000/logout/')
-    # Redirect client back home.
+    # Send auth to exp layer for deletion.
+    auth = request.COOKIES.get('authenticator')
+    url = 'http://exp-api:8000/logout/?authenticator=%s' % auth
+    response_request = urllib.request.Request(url)
+    urllib.request.urlopen(response_request)
+    # Prepare to redirect client back home.
     home = HttpResponseRedirect(reverse('home'))
     # Delete cookie from client if present. We're just going to assume log-out
     # was successful, as otherwise we might have a cookie with no corresponding
