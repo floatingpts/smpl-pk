@@ -17,10 +17,12 @@ class Musician(models.Model):
         return self.id
 
 class Authenticator(models.Model):
-    user_id = models.CharField(max_length=25)
-    authenticator = models.IntegerField(primary_key = True)
+    user_id = models.ForeignKey(Musician, on_delete=models.CASCADE)
+    authenticator = models.CharField(max_length=255)
     date_created = models.DateField()
 
+    def __str__(self):
+        return self.authenticator
 
 class SamplePack(models.Model):
     name = models.CharField(max_length=50)
@@ -42,5 +44,3 @@ class Sample(models.Model):
 
     def __str__(self):
         return self.name
-
-

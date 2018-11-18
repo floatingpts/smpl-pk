@@ -4,6 +4,7 @@ import django.contrib.auth.hashers
 from django.http import JsonResponse
 import urllib.request
 import urllib.parse
+import urllib.error
 import json
 
 def samplePack_details(request, pk):
@@ -48,32 +49,65 @@ def musician_detail(request, pk):
   return JsonResponse(data)
 
 @csrf_exempt
-def login(user):
+def login(request):
   # Pass info along to model API via a POST request with form data.
-  #user = {
-  #  "username": username,
-  #  "password": password,
-  #}
-  response = urllib.request.Request('http://models-api:8000/api/musician_login/', data=user)
-  json_auth = urllib.request.urlopen(response).read().decode('utf-8')
-  auth_data = json.loads(json_auth)
+  response_request = urllib.request.Request('http://models-api:8000/api/musician_login/', data=request.body, method='POST')
+  try:
+    response = urllib.request.urlopen(response_request)
+  except urllib.error.HTTPError as e:
+    if e.code == 404:
+      # This is expected if user is not found, can't return auth.
+      data = {
+        "success": False,
+        "error": "Incorrect username or password.",
+      }
+      return JsonResponse(data)
+    else:
+      data = {
+        "success": False,
+        "error": "Unknown error code %s." % e.code,
+      }
+      return JsonResponse(data)
 
+  # Decode the response.
+  decoded_response = response.read().decode('utf-8')
+  auth_data = json.loads(decoded_response)
+
+  # Return the authenticator.
   data = {
     "response": auth_data,
+    "success": True,
   }
+  return JsonResponse(data)
 
-  # Check if info was correct (stored in the database).
-  if response.status_code == 404:
-    return None
-  else:
+def logout(request):
+    # Get authenticator from front-end.
+    logout_info = request.GET
+    auth = logout_info['authenticator']
+    url = 'http://models-api:8000/api/musician_logout/?authenticator=%s' % auth
+    # Pass authenticator to model API for verification.
+    response_request = urllib.request.Request(url)
+    try:
+        response = urllib.request.urlopen(response_request)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            data = {
+              "success": False,
+              "error": "User could not be found (is not logged in).",
+            }
+            return JsonResponse(data)
+        else:
+            data = {
+              "success": False,
+              "error": "Unknown error code %s." % e.code,
+            }
+            return JsonResponse(data)
+
+    # Return a response specifying whether log-out was successful, depending on status code.
+    data = {
+        "success": True,
+    }
     return JsonResponse(data)
-
-def logout(authenticator):
-  # Pass authenticator to model API for verification.
-  # ...
-  # Return a JsonResponse specifying whether log-out was successful.
-  # ...
-  pass
 
 def create_account(username, password):
   # Create hashed version of password

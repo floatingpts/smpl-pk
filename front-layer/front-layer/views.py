@@ -1,7 +1,8 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.template import loader
+from django.urls import reverse
 from .forms import *
 import urllib.request
 import urllib.parse
@@ -34,9 +35,9 @@ def user_detail(request, pk):
 @csrf_exempt
 def login(request):
     if request.method == 'GET':
-        #display login form
+        # Display login form
         form = MusicianForm()
-        return render(request, 'front-layer/login.html', {'form':form, 'error': ''})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': ''})
 
     # Create new Musician form instance
     form = MusicianForm(request.POST)
@@ -44,36 +45,50 @@ def login(request):
     # Check if form is valid
     if not form.is_valid():
         #Form error, send back to login page with form errors
-        return render(request, 'front-layer/login.html', {'form':form, 'error': ''})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': ''})
 
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
     form_data = {'username': username, 'password': password}
-    data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
+    encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 
-    # Get next page. Currently automatically goes to home page
-    next = 'front-layer/home'
+    # Get next page.
+    next_page = form.cleaned_data.get('next') or reverse('home')
 
     # Send form data to exp layer
-    response = urllib.request.Request('http://exp-api:8000/login/', data=data_encoded, method='POST')
+    response_request = urllib.request.Request('http://exp-api:8000/login/', data=encoded_data, method='POST')
+
+    # Get response back and convert from JSON.
+    json_response = urllib.request.urlopen(response_request).read().decode("utf-8")
+    response = json.loads(json_response)
+
     # Check that exp layer says form data ok
-    if response == None:
-        error = "Incorrect username or password"
-        return render(request, 'front-layer/login.html', {'form':form, 'error':error})
+    if not response["success"]:
+        error = response["error"]
+        return render(request, 'front-layer/login.html', {'form': form, 'error': error})
 
     # Can now log user in, set login cookie
-    returned_json = urllib.request.urlopen(response).read().decode("utf-8")
-    returned_authentication = json.loads(returned_json)
-    authenticator = returned_authentication["response"]["authenticator"]
-    response = HttpResponseRedirect(next)
+    authenticator = response["response"]["authenticator"]
+    response = HttpResponseRedirect(next_page)
     response.set_cookie("authenticator", authenticator)
+
     return response
 
 def logout(request):
-    response = HttpResponseRedirect(reverse('front-layer/home'))
-    response.delete_cookie('authenticator')
-    return response
+    # Send auth to exp layer for deletion.
+    auth = request.COOKIES.get('authenticator')
+    url = 'http://exp-api:8000/logout/?authenticator=%s' % auth
+    response_request = urllib.request.Request(url)
+    urllib.request.urlopen(response_request)
+    # Prepare to redirect client back home.
+    home = HttpResponseRedirect(reverse('home'))
+    # Delete cookie from client if present. We're just going to assume log-out
+    # was successful, as otherwise we might have a cookie with no corresponding
+    # authenticator. Worst case we have an authenticator in the database with no
+    # cookie attached, which will be periodically wiped.
+    home.delete_cookie('authenticator')
+    return home
 
 def create_listing(request):
     #set cookie assigns a string name, use this name to try to get cookie
@@ -136,5 +151,3 @@ def create_account(request):
     response = HttpResponseRedirect(next)
     response.set_cookie("authenticator", authenticator)
     return response
-
-

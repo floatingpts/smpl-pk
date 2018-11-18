@@ -1,42 +1,36 @@
 <head>
-    <title>Login</title>
+  <title>Login</title>
 </head>
 
 {% extends 'front-layer/base.html' %}
 {% block content %}
-<div class="container">
-  {% if form.errors %}
-    <div class="alert alert-danger">
-    {% for field in form.errors %}
-      field
-      <br>
-    {% endfor %}
-    </div>
-  {% endif %}
-  {% if error != '' %}
-    <div class="alert alert-danger">error</div>
-  {% endif %}
-  <div class="row">
-    <div class="login-panel panel panel-default" style="position:absolute;right:50%">
-      <div class="panel-heading" style="text-align:center">
-	<h3 class="panel-title">Please sign in</h3>
+{% if form.errors %}
+<div class="alert alert-danger">
+  {% for field in form.errors %}
+  field
+  <br>
+  {% endfor %}
+</div>
+{% endif %}
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+<div class="card" style="width: 30rem;">
+  <div class="card-header">
+    Please sign in
+  </div>
+  <div class="card-body">
+    <form method="post" action="{% url 'login' %}">
+      {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
       </div>
-    <div class="panel-body" style="text-align:center">
-	<form method="post" action="{% url 'login' %}">
-	  <p class="bs-component">
-	    {% for field in form %}
-	    <label>{{ field.label_tag }}</label>
-	    {{ field }}
-	    <br>
-	    <br>
-	    {% endfor %}
-	  </p>
-	  <p class="bs-component">
-	    <input class="btn btn-success btn-sm" type="submit" value="login" style="margin:auto"/>
-	  </p>
-	</form>
-    </div> <!-- /form -->
-    </div> <!-- /login -->
-  </div> <!-- /row -->
+      {% endfor %}
+      <input class="btn btn-primary" type="submit" value="Login"/>
+    </form>
+  </div>
+</div>
+<!-- /row -->
 </div>
 {% endblock %}
