@@ -48,13 +48,9 @@ def musician_detail(request, pk):
   return JsonResponse(data)
 
 @csrf_exempt
-def login(user):
+def login(request, encoded_user):
   # Pass info along to model API via a POST request with form data.
-  #user = {
-  #  "username": username,
-  #  "password": password,
-  #}
-  response = urllib.request.Request('http://models-api:8000/api/musician_login/', data=user)
+  response = urllib.request.Request('http://models-api:8000/api/musician_login/', data=encoded_user, method='POST')
   json_auth = urllib.request.urlopen(response).read().decode('utf-8')
   auth_data = json.loads(json_auth)
 

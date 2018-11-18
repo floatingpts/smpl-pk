@@ -36,19 +36,25 @@ def musician_list(request):
   return JsonResponse(serializer.errors, status=400)
 
 @csrf_exempt
-def musician_login(request, user):
+def musician_login(request, encoded_user):
   try:
+    # Decode form-encoded user information
+    # Use urllib's method to decode a query string (using default UTF8 encoding) 
+    user = urllib.parse.parse_qs(encoded_user)
     name = user["username"]
     hashed_pass = user["password"]
-    musician = Musician.objects.get(username=name, password=hashed_pass)
+    # Get the user
+    musician = Musician.objects.filter(username=name, password=hashed_pass)
     # Generate random auth string
     auth = generate_auth()
     # Check that this random string not already used
     while(Authenticator.objects.filter(authenticator=auth).exists()):
       auth = generate_auth()
-    # We now know that string stored in auth is unique,
-    # so create new authenticator object
-    new_auth = Authenticator.objects.create(user_id=musician.pk, authenticator=auth, date_created=datetime.date.today())
+    # We now know that string stored in auth is unique, so create new authenticator object
+    new_auth = Authenticator.objects.create(
+            user_id=musician.pk,
+            authenticator=auth,
+            date_created=datetime.date.today())
     new_auth.save()
     serializer = AuthenticatorSerializer(new_auth)
     return JsonResponse(serializer.data)

@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.template import loader
+from django.urls import reverse
 from .forms import *
 import urllib.request
 import urllib.parse
@@ -34,7 +35,7 @@ def user_detail(request, pk):
 @csrf_exempt
 def login(request):
     if request.method == 'GET':
-        #display login form
+        # Display login form
         form = MusicianForm()
         return render(request, 'front-layer/login.html', {'form':form, 'error': ''})
 
@@ -50,24 +51,26 @@ def login(request):
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
     form_data = {'username': username, 'password': password}
-    data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
+    encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 
-    # Get next page. Currently automatically goes to home page
-    next = 'front-layer/home'
+    # Get next page.
+    next_page = form.cleaned_data.get('next') or reverse('home')
 
     # Send form data to exp layer
-    response = urllib.request.Request('http://exp-api:8000/login/', data=data_encoded, method='POST')
+    response = urllib.request.Request('http://exp-api:8000/login/', data=encoded_data, method='POST')
+
     # Check that exp layer says form data ok
-    if response == None:
+    if not response:
         error = "Incorrect username or password"
-        return render(request, 'front-layer/login.html', {'form':form, 'error':error})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': error})
 
     # Can now log user in, set login cookie
-    returned_json = urllib.request.urlopen(response).read().decode("utf-8")
-    returned_authentication = json.loads(returned_json)
-    authenticator = returned_authentication["response"]["authenticator"]
-    response = HttpResponseRedirect(next)
-    response.set_cookie("authenticator", authenticator)
+    # returned_json = urllib.request.urlopen(response).read().decode("utf-8")
+    # returned_authentication = json.loads(returned_json)
+    # authenticator = returned_authentication["response"]["authenticator"]
+    response = HttpResponseRedirect(next_page)
+    # response.set_cookie("authenticator", authenticator)
+
     return response
 
 def logout(request):
@@ -136,5 +139,3 @@ def create_account(request):
     response = HttpResponseRedirect(next)
     response.set_cookie("authenticator", authenticator)
     return response
-
-
