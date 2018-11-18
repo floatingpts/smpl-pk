@@ -8,8 +8,17 @@ class ListingForm(forms.Form):
 
 
 class MusicianForm(forms.Form):
-    username = forms.CharField(label='Username', max_length=25)
-    password = forms.CharField(label='Password', widget=forms.PasswordInput(), max_length=100)
-    
-
-
+    username = forms.CharField(
+        label='Username',
+        max_length=25,
+        widget=forms.TextInput(
+            attrs={'class':'form-control', 'placeholder':'Username'}
+        )
+    )
+    password = forms.CharField(
+        label='Password',
+        max_length=100,
+        widget=forms.PasswordInput(
+            attrs={'class':'form-control', 'placeholder':'Password'}
+        )
+    )
