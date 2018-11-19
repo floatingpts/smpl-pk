@@ -18,4 +18,5 @@ urlpatterns = [
     # Authentication
     path('musician_login/', views.musician_login),
     path('musician_logout/', views.musician_logout),
+    path('musician_create_account/', views.musician_create_account),
 ]

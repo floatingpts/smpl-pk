@@ -4,48 +4,84 @@ from django.shortcuts import render
 from django.template import loader
 from django.urls import reverse
 from .forms import *
+import django.contrib.auth.hashers
 import urllib.request
 import urllib.parse
 import json
 
 def home(request):
+    #Check if user logged in (for login/logout link)
+    authenticator = request.COOKIES.get('authenticator')
+    if authenticator:
+        loggedIn = True
+    else:
+        loggedIn = False
+
     template = loader.get_template('front-layer/home.html')
     request_top_5 = urllib.request.Request('http://exp-api:8000/home/')
     json_top_5 = urllib.request.urlopen(request_top_5).read().decode('utf-8')
     top_5 = json.loads(json_top_5)
     context = top_5
+    #add logged-in info
+    context['loggedIn'] = loggedIn
+
     return HttpResponse(template.render(context, request))
 
 def pack_detail(request, pk):
+    #Check if user logged in (for login/logout link)
+    authenticator = request.COOKIES.get('authenticator')
+    if authenticator:
+        loggedIn = True
+    else:
+        loggedIn = False
     template = loader.get_template('front-layer/pack_detail.html')
     request_pack = urllib.request.Request('http://exp-api:8000/pack_detail/' + str(pk) + '/')
     json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
     pack = json.loads(json_pack)
     context = pack
+    #add logged-in info
+    context['loggedIn'] = loggedIn
+
     return HttpResponse(template.render(context, request))
 
 def user_detail(request, pk):
+    #Check if user logged in (for login/logout link)
+    authenticator = request.COOKIES.get('authenticator')
+    if authenticator:
+        loggedIn = True
+    else:
+        loggedIn = False
     template = loader.get_template('front-layer/musician_detail.html')
     request_musician = urllib.request.Request('http://exp-api:8000/musician_detail/' + str(pk) + '/')
     json_musician = urllib.request.urlopen(request_pack).read().decode('utf-8')
     musician = json.loads(json_musician)
     context = musician
+    #add logged-in info
+    context['loggedIn'] = loggedIn
+
     return HttpResponse(template.render(context, request))
 
 @csrf_exempt
 def login(request):
+    #Check if user logged in (for login/logout link)
+    authenticator = request.COOKIES.get('authenticator')
+    if authenticator:
+        loggedIn = True
+    else:
+        loggedIn = False
+
     if request.method == 'GET':
         # Display login form
-        form = MusicianForm()
-        return render(request, 'front-layer/login.html', {'form': form, 'error': ''})
+        form = LoginForm()
+        return render(request, 'front-layer/login.html', {'form': form, 'error': '', 'loggedIn': loggedIn})
 
-    # Create new Musician form instance
-    form = MusicianForm(request.POST)
+    # Create new Login form instance
+    form = LoginForm(request.POST)
 
     # Check if form is valid
     if not form.is_valid():
         #Form error, send back to login page with form errors
-        return render(request, 'front-layer/login.html', {'form': form, 'error': ''})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': '', 'loggedIn': loggedIn})
 
     # Get form data
     username = form.cleaned_data['username']
@@ -66,7 +102,7 @@ def login(request):
     # Check that exp layer says form data ok
     if not response["success"]:
         error = response["error"]
-        return render(request, 'front-layer/login.html', {'form': form, 'error': error})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': error, 'loggedIn': loggedIn})
 
     # Can now log user in, set login cookie
     authenticator = response["response"]["authenticator"]
@@ -91,6 +127,7 @@ def logout(request):
     return home
 
 def create_listing(request):
+    
     #set cookie assigns a string name, use this name to try to get cookie
     authenticator = request.COOKIES.get('authenticator')
     #if user not logged in
@@ -136,18 +173,30 @@ def create_account(request):
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
-    form_data = {'username': username, 'password': password}
+    email = form.cleaned_data['email']
+    # Create hashed version of password
+    hashed_password = make_password(password)
+    
+    form_data = {'username': username, 'password': hashed_password, 'email': email}
 
-    # Get next page. Currently automatically goes to home page
-    next = reverse('front-layer/home')
+    # Get next page.
+    next_page = form.cleaned_data.get('next') or reverse('home')
 
     # Send form data to exp layer
-    data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
-    response = urllib.request.Request('http://exp-api:8000/create_listing/', data=data_encoded, method='POST')
-    # ADD CHECKING EXP RESPONSE!!!
+    response_request = urllib.request.Request('http://exp-api:8000/create_account/', data=encoded_data, method='POST')
+
+    # Get response back and convert from JSON.
+    json_response = urllib.request.urlopen(response_request).read().decode("utf-8")
+    response = json.loads(json_response)
+
+    # Check that exp layer says form data ok
+    if not response["success"]:
+        error = response["error"]
+        return render(request, 'front-layer/create_account.html', {'form': form, 'error': error})
 
     # Can now log user in, set login cookie
-    authenticator = response['response']['authenticator']
-    response = HttpResponseRedirect(next)
+    authenticator = response["response"]["authenticator"]
+    response = HttpResponseRedirect(next_page)
     response.set_cookie("authenticator", authenticator)
+
     return response

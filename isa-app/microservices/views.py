@@ -65,6 +65,54 @@ def musician_detail(request, pk):
 		return HttpResponse(status=204)
 
 @csrf_exempt
+def musician_create_account(request):
+    if request.method == 'POST':
+        # Decode form-encoded user information from request key-value pairs.
+        user_query = request.POST
+        # Django gives us a QueryDict for the POST body.
+        name = user_query.get('username')
+        hashed_pass = user_query.get('password')
+        mail = user_query.get('email')
+
+        # Check that user doesn't already exist.
+        try:
+            musician = Musician.objects.get(username=name, password=hashed_pass, email=mail)
+            # Return error, since user shouldn't exist
+            return HttpResponse(status=501)
+
+        except Musician.DoesNotExist:
+            # New user, so add to database.
+            new_user = Musician.objects.create(
+                username=name,
+                password=hashed_pass,
+                email=mail,
+                )
+            new_user.save()
+            mSerializer = MusicianSerializer(new_user)
+
+        # Retrieve new musician for creating authenticator
+        musician = Musician.objects.get(username=name, password=hashed_pass, email=mail)
+        # Generate random auth string.
+        auth = generate_auth()
+        # Check that this random string not already used.
+        while(Authenticator.objects.filter(authenticator=auth).exists()):
+            auth = generate_auth()
+
+        # We now know that string stored in auth is unique, so create new authenticator object.
+        new_auth = Authenticator.objects.create(
+            user_id=musician.pk,
+            authenticator=auth,
+            date_created=datetime.date.today())
+        new_auth.save()
+        serializer = AuthenticatorSerializer(new_auth)
+        return JsonResponse(serializer.data)
+
+    else:
+        # We want the API to be called as a POST request with the arguments.
+        # >>> 501 Error Code: Not Implemented (i.e. wrong request).
+        return HttpResponse(status=501)
+
+@csrf_exempt
 def musician_login(request):
     if request.method == 'POST':
         # Decode form-encoded user information from request key-value pairs.
