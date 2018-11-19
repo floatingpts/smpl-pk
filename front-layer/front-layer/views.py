@@ -178,6 +178,7 @@ def create_account(request):
     hashed_password = make_password(password)
     
     form_data = {'username': username, 'password': hashed_password, 'email': email}
+    encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 
     # Get next page.
     next_page = form.cleaned_data.get('next') or reverse('home')
