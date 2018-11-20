@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.template import loader
 from django.urls import reverse
 from .forms import *
-import django.contrib.auth.hashers
+from django.contrib.auth.hashers import make_password
 import urllib.request
 import urllib.parse
 import json
@@ -86,7 +86,9 @@ def login(request):
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
-    form_data = {'username': username, 'password': password}
+    # Create hashed version of password
+    hashed_password = make_password(password)
+    form_data = {'username': username, 'password': hashed_password}
     encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 
     # Get next page.
@@ -127,7 +129,7 @@ def logout(request):
     return home
 
 def create_listing(request):
-    
+
     #set cookie assigns a string name, use this name to try to get cookie
     authenticator = request.COOKIES.get('authenticator')
     #if user not logged in
@@ -176,7 +178,7 @@ def create_account(request):
     email = form.cleaned_data['email']
     # Create hashed version of password
     hashed_password = make_password(password)
-    
+
     form_data = {'username': username, 'password': hashed_password, 'email': email}
     encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 

@@ -76,22 +76,19 @@ def musician_create_account(request):
 
         # Check that user doesn't already exist.
         try:
-            musician = Musician.objects.get(username=name, password=hashed_pass, email=mail)
-            # Return error, since user shouldn't exist
-            return HttpResponse(status=501)
-
+            musician = Musician.objects.get(username=name) # or Musician.objects.get(email=mail)
+            # Return error, since user needs to pick a unique username.
+            # >>> HTTP code 409: conflicting resource.
+            return HttpResponse(status=409)
         except Musician.DoesNotExist:
             # New user, so add to database.
             new_user = Musician.objects.create(
                 username=name,
                 password=hashed_pass,
                 email=mail,
-                )
+            )
             new_user.save()
-            mSerializer = MusicianSerializer(new_user)
 
-        # Retrieve new musician for creating authenticator
-        musician = Musician.objects.get(username=name, password=hashed_pass, email=mail)
         # Generate random auth string.
         auth = generate_auth()
         # Check that this random string not already used.
@@ -100,7 +97,7 @@ def musician_create_account(request):
 
         # We now know that string stored in auth is unique, so create new authenticator object.
         new_auth = Authenticator.objects.create(
-            user_id=musician.pk,
+            user_id=new_user,
             authenticator=auth,
             date_created=datetime.date.today())
         new_auth.save()

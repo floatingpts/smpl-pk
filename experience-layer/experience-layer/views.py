@@ -122,7 +122,7 @@ def create_account(request):
         "error": "Unknown error code %s." % e.code,
     }
     return JsonResponse(data)
-  
+
   # Decode the response.
   decoded_response = response.read().decode('utf-8')
   auth_data = json.loads(decoded_response)
@@ -133,11 +133,6 @@ def create_account(request):
     "success": True,
   }
   return JsonResponse(data)
-  
-  # Check if info does not exist, validate password. Model API will add user to database.
-  # ...
-  # Return a JsonReponse to the front-end specifying whether account creation was successful, with the new authenticator included.
-  pass
 
 def create_listing(authenticator, data):
   # Pass authenticator to model API for verification.

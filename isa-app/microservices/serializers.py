@@ -5,7 +5,7 @@ from .models import Musician, Sample, SamplePack, Authenticator
 class MusicianSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Musician
-		fields = ('username', 'email', 'password', 'follower_count', 'balance', 'rating')
+		fields = ('id', 'username', 'email', 'password', 'follower_count', 'balance', 'rating')
 
 class SamplePackSerializer(serializers.ModelSerializer):
 	class Meta:
