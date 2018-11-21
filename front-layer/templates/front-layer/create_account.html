@@ -4,6 +4,17 @@
 
 {% extends 'front-layer/base.html' %}
 {% block content %}
+{% if form.errors %}
+<div class="alert alert-danger">
+   {% for field in form.errors %}
+   field
+   <br>
+   {% endfor %}
+</div>
+{% endif %}
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
 <div class="container">
   <div class="row">
     <div class="login-panel panel panel-default" style="position:absolute;right:50%">
@@ -11,7 +22,7 @@
 	<h3 class="panel-title">Create Account</h3>
       </div>
       <div class="panel-body" style="text-align:center">
-	<form method="post" action="{% url 'login' %}">
+	<form method="post" action="{% url 'create_account' %}">
 	  {% csrf_token %}
 	  <p class="bs-component">
 	    {% for field in form %}

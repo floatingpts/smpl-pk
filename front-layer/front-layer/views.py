@@ -162,16 +162,17 @@ def create_listing(request):
 
 def create_account(request):
     if request.method == 'GET':
-        #display signup form
+        # Display signup form
         form = MusicianForm()
         return render(request, 'front-layer/create_account.html', {'form':form})
+
     # Create new Musician form instance
     form = MusicianForm(request.POST)
 
     # Check if form is valid
     if not form.is_valid():
         #Form error, send back to sign-up page with an error ADD ERROR
-        return render('front-layer/create_account.html')
+        return render('front-layer/create_account.html', {'form': form, 'error': ''})
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
@@ -183,7 +184,7 @@ def create_account(request):
     encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 
     # Get next page.
-    next_page = reverse('home')
+    next_page = form.cleaned_data.get('next') or reverse('home')
 
     # Send form data to exp layer
     response_request = urllib.request.Request('http://exp-api:8000/create_account/', data=encoded_data, method='POST')
