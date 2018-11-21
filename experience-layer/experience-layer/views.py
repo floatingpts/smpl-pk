@@ -136,8 +136,6 @@ def create_account(request):
   
   # Check if info does not exist, validate password. Model API will add user to database.
   # ...
-  # Return a JsonReponse to the front-end specifying whether account creation was successful, with the new authenticator included.
-  pass
 
 def create_listing(authenticator, data):
   # Pass authenticator to model API for verification.

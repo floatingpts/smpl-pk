@@ -76,7 +76,7 @@ def musician_create_account(request):
 
         # Check that user doesn't already exist.
         try:
-            musician = Musician.objects.get(username=name, password=hashed_pass, email=mail)
+            musician = Musician.objects.get(username=name, password=hashed_pass)
             # Return error, since user shouldn't exist
             return HttpResponse(status=501)
 
@@ -91,7 +91,8 @@ def musician_create_account(request):
             mSerializer = MusicianSerializer(new_user)
 
         # Retrieve new musician for creating authenticator
-        musician = Musician.objects.get(username=name, password=hashed_pass, email=mail)
+        #musician = Musician.objects.get(username=name, password=hashed_pass, email=mail)
+        
         # Generate random auth string.
         auth = generate_auth()
         # Check that this random string not already used.
@@ -100,7 +101,7 @@ def musician_create_account(request):
 
         # We now know that string stored in auth is unique, so create new authenticator object.
         new_auth = Authenticator.objects.create(
-            user_id=musician.pk,
+            user_id=new_user,
             authenticator=auth,
             date_created=datetime.date.today())
         new_auth.save()
