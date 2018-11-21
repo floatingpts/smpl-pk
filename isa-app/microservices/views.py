@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import check_password
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -116,14 +117,19 @@ def musician_login(request):
         # Decode form-encoded user information from request key-value pairs.
         user_query = request.POST
         # Django gives us a QueryDict for the POST body.
-        name = user_query.get('username')
-        hashed_pass = user_query.get('password')
+        username = user_query.get('username')
+        text_pass = user_query.get('password')
 
         # Get the user.
         try:
-            musician = Musician.objects.get(username=name, password=hashed_pass)
+            musician = Musician.objects.get(username=username)
         except Musician.DoesNotExist:
             # Could not find the user.
+            return HttpResponse(status=404)
+
+        # Validate the plain-text password against the hash.
+        hashed_pass = musician.password
+        if not check_password(text_pass, hashed_pass):
             return HttpResponse(status=404)
 
         # Generate random auth string.
