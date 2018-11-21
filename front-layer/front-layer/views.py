@@ -183,7 +183,7 @@ def create_account(request):
     encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 
     # Get next page.
-    next_page = form.cleaned_data.get('next') or reverse('home')
+    next_page = reverse('home')
 
     # Send form data to exp layer
     response_request = urllib.request.Request('http://exp-api:8000/create_account/', data=encoded_data, method='POST')

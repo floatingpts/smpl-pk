@@ -80,6 +80,7 @@ def musician_create_account(request):
             # Return error, since user needs to pick a unique username.
             # >>> HTTP code 409: conflicting resource.
             return HttpResponse(status=409)
+
         except Musician.DoesNotExist:
             # New user, so add to database.
             new_user = Musician.objects.create(
