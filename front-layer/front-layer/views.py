@@ -86,9 +86,7 @@ def login(request):
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
-    # Create hashed version of password
-    hashed_password = make_password(password)
-    form_data = {'username': username, 'password': hashed_password}
+    form_data = {'username': username, 'password': password}
     encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 
     # Get next page.
