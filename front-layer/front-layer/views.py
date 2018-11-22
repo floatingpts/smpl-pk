@@ -19,6 +19,9 @@ def is_user_logged_in(request):
     else:
         return False
 
+# ==============
+# MAIN METHODS
+# ==============
 def home(request):
     #Check if user logged in (for login/logout link)
     authenticator = request.COOKIES.get('authenticator')
@@ -176,7 +179,8 @@ def create_account(request):
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
     email = form.cleaned_data['email']
-    # Create hashed version of password
+    # Create hashed version of password. By default,
+    # make_password salts the password in addition to hashing it.
     hashed_password = make_password(password)
 
     form_data = {'username': username, 'password': hashed_password, 'email': email}
