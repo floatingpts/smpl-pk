@@ -4,26 +4,32 @@
 
 {% extends 'front-layer/base.html' %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="panel panel-primary" style="width: 650px">
-      <div class="panel-heading">
-	Create New Listing
+{% if form.errors %}
+<div class="alert alert-danger">
+  {% for field in form.errors %}
+  field
+  <br>
+  {% endfor %}
+</div>
+{% endif %}
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+<div class="card" style="width: 30rem;">
+  <div class="card-header">
+    Create Listing
+  </div>
+  <div class="card-body">
+  	<form method="post" action="{% url 'create_listing' %}">
+  	  {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
       </div>
-      <div class="panel-body">
-	<form method="post" action="{% url 'create_listing' %}">
-	  {% csrf_token %}
-	  {% for field in form %}
-	  <label>{{ field.label_tag }}</label>
-	  <br>
-	  {{ field }}
-	  <br>
-	  <br>
-	  {% endfor %}
-	    <input class="btn btn-success" type="submit" value="Submit" style="margin:auto"/>
-	</form>
-      </div>
-    </div>
+      {% endfor %}
+  	  <input class="btn btn-primary" type="submit" value="Submit"/>
+  	</form>
   </div>
 </div>
 {% endblock %}

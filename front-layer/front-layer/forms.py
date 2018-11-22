@@ -2,10 +2,28 @@ from django import forms
 
 
 class ListingForm(forms.Form):
-    name = forms.CharField(label='Name', max_length=50)
-    description = forms.CharField(label='Description', max_length=1000, widget=forms.Textarea)
-    price = forms.DecimalField(label='Price', max_digits=5, decimal_places=2)
-
+    sample_name = forms.CharField(
+        label='Name',
+        max_length=50,
+        widget=forms.TextInput(
+            attrs={'class':'form-control', 'placeholder':'Sample name'}
+        )
+    )
+    sample_description = forms.CharField(
+        label='Description',
+        max_length=1000,
+        widget=forms.TextInput(
+            attrs={'class':'form-control', 'placeholder':'Sample description'}
+        )
+    )
+    price = forms.DecimalField(
+        label='Price',
+        max_digits=5,
+        decimal_places=2,
+        widget=forms.NumberInput(
+            attrs={'class':'form-control', 'placeholder': '0.00'}
+        )
+    )
 
 class MusicianForm(forms.Form):
     username = forms.CharField(

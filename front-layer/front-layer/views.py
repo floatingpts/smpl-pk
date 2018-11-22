@@ -9,6 +9,16 @@ import urllib.request
 import urllib.parse
 import json
 
+# ==============
+# HELPER METHODS
+# ==============
+def is_user_logged_in(request):
+    authenticator_exists = request.COOKIES.get('authenticator')
+    if authenticator_exists:
+        return True
+    else:
+        return False
+
 def home(request):
     #Check if user logged in (for login/logout link)
     authenticator = request.COOKIES.get('authenticator')
@@ -28,52 +38,39 @@ def home(request):
     return HttpResponse(template.render(context, request))
 
 def pack_detail(request, pk):
-    #Check if user logged in (for login/logout link)
-    authenticator = request.COOKIES.get('authenticator')
-    if authenticator:
-        loggedIn = True
-    else:
-        loggedIn = False
+    # Check if user logged in (for login/logout link)
+    logged_in = is_user_logged_in(request)
     template = loader.get_template('front-layer/pack_detail.html')
     request_pack = urllib.request.Request('http://exp-api:8000/pack_detail/' + str(pk) + '/')
     json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
     pack = json.loads(json_pack)
     context = pack
-    #add logged-in info
-    context['loggedIn'] = loggedIn
-
+    # Add logged-in info
+    context['loggedIn'] = logged_in
     return HttpResponse(template.render(context, request))
 
 def user_detail(request, pk):
-    #Check if user logged in (for login/logout link)
-    authenticator = request.COOKIES.get('authenticator')
-    if authenticator:
-        loggedIn = True
-    else:
-        loggedIn = False
+    # Check if user logged in (for login/logout link)
+    logged_in = is_user_logged_in(request)
     template = loader.get_template('front-layer/musician_detail.html')
     request_musician = urllib.request.Request('http://exp-api:8000/musician_detail/' + str(pk) + '/')
     json_musician = urllib.request.urlopen(request_pack).read().decode('utf-8')
     musician = json.loads(json_musician)
     context = musician
     #add logged-in info
-    context['loggedIn'] = loggedIn
+    context['loggedIn'] = logged_in
 
     return HttpResponse(template.render(context, request))
 
 @csrf_exempt
-def login(request):
-    #Check if user logged in (for login/logout link)
-    authenticator = request.COOKIES.get('authenticator')
-    if authenticator:
-        loggedIn = True
-    else:
-        loggedIn = False
+def login(request, **kwargs):
+    # Check if user logged in (for login/logout link)
+    logged_in = is_user_logged_in(request)
 
     if request.method == 'GET':
         # Display login form
         form = LoginForm()
-        return render(request, 'front-layer/login.html', {'form': form, 'error': '', 'loggedIn': loggedIn})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': '', 'loggedIn': logged_in})
 
     # Create new Login form instance
     form = LoginForm(request.POST)
@@ -81,7 +78,7 @@ def login(request):
     # Check if form is valid
     if not form.is_valid():
         #Form error, send back to login page with form errors
-        return render(request, 'front-layer/login.html', {'form': form, 'error': '', 'loggedIn': loggedIn})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': '', 'loggedIn': logged_in})
 
     # Get form data
     username = form.cleaned_data['username']
@@ -89,7 +86,7 @@ def login(request):
     form_data = {'username': username, 'password': password}
     encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 
-    # Get next page.
+    # Get next page from form, URL request, and home in that order of priority.
     next_page = form.cleaned_data.get('next') or reverse('home')
 
     # Send form data to exp layer
@@ -102,7 +99,7 @@ def login(request):
     # Check that exp layer says form data ok
     if not response["success"]:
         error = response["error"]
-        return render(request, 'front-layer/login.html', {'form': form, 'error': error, 'loggedIn': loggedIn})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': error, 'loggedIn': logged_in})
 
     # Can now log user in, set login cookie
     authenticator = response["response"]["authenticator"]
@@ -127,38 +124,42 @@ def logout(request):
     return home
 
 def create_listing(request):
+    logged_in = is_user_logged_in(request)
+    if not logged_in:
+        # Remove extra forward slashes.
+        return HttpResponseRedirect(reverse('login'))
 
-    #set cookie assigns a string name, use this name to try to get cookie
-    authenticator = request.COOKIES.get('authenticator')
-    #if user not logged in
-    if not authenticator:
-        return HttpResponseRedirect(reverse("login"))
-
-    #GET request
+    # GET the form for users
     if request.method == 'GET':
-        #Display form page
+        # Display form page
         form = ListingForm()
-        return render(request, "front-layer/create_listing.html", {'form':form})
+        return render(request, "front-layer/create_listing.html", {'form':form, 'loggedIn': logged_in})
 
-    #Otherwise, create new form instance
+    # Otherwise, create new form instance
     form = ListingForm(request.POST)
 
-    #Retrieve form data
+    # Retrieve form data
     name = form.cleaned_data['name']
     description = form.cleaned_data['description']
     price = form.cleaned_data['price']
+    authenticator = request.COOKIES.get('authenticator')
     form_data = {'name': name, 'description': description, 'price': price, 'authenticator': authenticator}
 
-    #Send form data to exp layer
+    # Send form data to exp layer
     data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
     response = urllib.request.Request('http://exp-api:8000/create_listing/', data=data_encoded, method='POST')
 
-    #Check if exp response says we passed incorrect info
-    #ADD ONCE EXP DONE!!!
+    # Check if exp response says we passed incorrect info
+    # ADD ONCE EXP DONE!!!
 
     return render(request, "front-layer/create_listing_success.html")
 
 def create_account(request):
+    # A user cannot create a new account while logged in.
+    logged_in = is_user_logged_in(request)
+    if logged_in:
+        return HttpResponseRedirect(reverse('home'))
+
     if request.method == 'GET':
         # Display signup form
         form = MusicianForm()
