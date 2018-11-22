@@ -25,5 +25,6 @@ urlpatterns = [
     path('create_account/', views.create_account, name='create_account'),
     path('sample-pack/<int:pk>/', views.pack_detail, name='detail'),
     path('musician/<int:pk>/', views.user_detail, name='user_detail'),
+    path('search_results/', views.search_results, name='search_results'),
     path('admin/', admin.site.urls),
 ]

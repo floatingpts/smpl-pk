@@ -1,0 +1,35 @@
+<head>
+    <title>Add Listing</title>
+</head>
+
+{% extends 'front-layer/base.html' %}
+{% block content %}
+{% if form.errors %}
+<div class="alert alert-danger">
+  {% for field in form.errors %}
+  field
+  <br>
+  {% endfor %}
+</div>
+{% endif %}
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+<div class="card" style="width: 30rem;">
+  <div class="card-header">
+    Create Listing
+  </div>
+  <div class="card-body">
+  	<form method="post" action="{% url 'create_listing' %}">
+  	  {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
+      </div>
+      {% endfor %}
+  	  <input class="btn btn-primary" type="submit" value="Submit"/>
+  	</form>
+  </div>
+</div>
+{% endblock %}
