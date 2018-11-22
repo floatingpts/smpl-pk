@@ -21,6 +21,7 @@
   </div>
   <div class="card-body">
     <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
       {% for field in form %}
       <div class="form-group">
         {{ field.label_tag }}
@@ -29,6 +30,7 @@
       {% endfor %}
       <input class="btn btn-primary" type="submit" value="Login"/>
     </form>
+    <a class="small" href="{% url 'create_account' %}">Or sign up instead!</a>
   </div>
 </div>
 <!-- /row -->

@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import check_password
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -65,19 +66,70 @@ def musician_detail(request, pk):
 		return HttpResponse(status=204)
 
 @csrf_exempt
-def musician_login(request):
+def musician_create_account(request):
     if request.method == 'POST':
         # Decode form-encoded user information from request key-value pairs.
         user_query = request.POST
         # Django gives us a QueryDict for the POST body.
         name = user_query.get('username')
         hashed_pass = user_query.get('password')
+        mail = user_query.get('email')
+
+        # Check that user doesn't already exist.
+        try:
+            musician = Musician.objects.get(username=name) # or Musician.objects.get(email=mail)
+            # Return error, since user needs to pick a unique username.
+            # >>> HTTP code 409: conflicting resource.
+            return HttpResponse(status=409)
+
+        except Musician.DoesNotExist:
+            # New user, so add to database.
+            new_user = Musician.objects.create(
+                username=name,
+                password=hashed_pass,
+                email=mail,
+            )
+            new_user.save()
+
+        # Generate random auth string.
+        auth = generate_auth()
+        # Check that this random string not already used.
+        while(Authenticator.objects.filter(authenticator=auth).exists()):
+            auth = generate_auth()
+
+        # We now know that string stored in auth is unique, so create new authenticator object.
+        new_auth = Authenticator.objects.create(
+            user_id=new_user,
+            authenticator=auth,
+            date_created=datetime.date.today())
+        new_auth.save()
+        serializer = AuthenticatorSerializer(new_auth)
+        return JsonResponse(serializer.data)
+
+    else:
+        # We want the API to be called as a POST request with the arguments.
+        # >>> 501 Error Code: Not Implemented (i.e. wrong request).
+        return HttpResponse(status=501)
+
+@csrf_exempt
+def musician_login(request):
+    if request.method == 'POST':
+        # Decode form-encoded user information from request key-value pairs.
+        user_query = request.POST
+        # Django gives us a QueryDict for the POST body.
+        username = user_query.get('username')
+        text_pass = user_query.get('password')
 
         # Get the user.
         try:
-            musician = Musician.objects.get(username=name, password=hashed_pass)
+            musician = Musician.objects.get(username=username)
         except Musician.DoesNotExist:
             # Could not find the user.
+            return HttpResponse(status=404)
+
+        # Validate the plain-text password against the hash.
+        hashed_pass = musician.password
+        if not check_password(text_pass, hashed_pass):
             return HttpResponse(status=404)
 
         # Generate random auth string.

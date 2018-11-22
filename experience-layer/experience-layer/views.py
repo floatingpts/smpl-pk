@@ -109,19 +109,30 @@ def logout(request):
     }
     return JsonResponse(data)
 
-def create_account(username, password):
-  # Create hashed version of password
-  hashed_password = make_password(password)
-  # Pass info along to model API.
-  user = {
-    "username": username,
-    "password": hashed_password,
+@csrf_exempt
+def create_account(request):
+  # Pass info along to model API via a POST request with form data.
+  response_request = urllib.request.Request('http://models-api:8000/api/musician_create_account/', data=request.body, method='POST')
+  try:
+    response = urllib.request.urlopen(response_request)
+  except urllib.error.HTTPError as e:
+    #handle error
+    data = {
+        "success": False,
+        "error": "Unknown error code %s." % e.code,
+    }
+    return JsonResponse(data)
+
+  # Decode the response.
+  decoded_response = response.read().decode('utf-8')
+  auth_data = json.loads(decoded_response)
+
+  # Return the authenticator.
+  data = {
+    "response": auth_data,
+    "success": True,
   }
-  response = urllib.request.Request('http://models-api:8000/api/mu', data=user, method='PUT')
-  # Check if info does not exist, validate password. Model API will add user to database.
-  # ...
-  # Return a JsonReponse to the front-end specifying whether account creation was successful, with the new authenticator included.
-  pass
+  return JsonResponse(data)
 
 def create_listing(authenticator, data):
   # Pass authenticator to model API for verification.

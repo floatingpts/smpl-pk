@@ -18,6 +18,25 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          {% if loggedIn %}
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" style="color:blue" href="{% url 'logout' %}">Log out</a>
+            </li>
+          </ul>
+          {% else %}
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" style="color:blue"  href="{% url 'login' %}">Log in</a>
+            </li>
+          </ul>
+          {% endif %}
+          <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        </div>
+        
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
@@ -27,7 +46,6 @@
                 <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
-        </div>
     </nav>
     <div class="container-fluid">
         <div class="row">
@@ -45,8 +63,8 @@
                 </ul>
             </div>
             <div class="col-md-9">
-                {% block content %}
-                {% endblock %}
+              {% block content %}
+	      {% endblock %}
             </div>
         </div>
     </div>

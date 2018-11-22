@@ -22,3 +22,26 @@ class MusicianForm(forms.Form):
             attrs={'class':'form-control', 'placeholder':'Password'}
         )
     )
+    email = forms.EmailField(
+        label='Email',
+        max_length=25,
+        widget=forms.EmailInput(
+            attrs={'class':'form-control', 'placeholder':'user@example.com'}
+        )
+    )
+
+class LoginForm(forms.Form):
+    username = forms.CharField(
+        label='Username',
+        max_length=25,
+        widget=forms.TextInput(
+            attrs={'class':'form-control', 'placeholder':'Username'}
+        )
+    )
+    password = forms.CharField(
+        label='Password',
+        max_length=100,
+        widget=forms.PasswordInput(
+            attrs={'class':'form-control', 'placeholder':'Password'}
+        )
+    )
