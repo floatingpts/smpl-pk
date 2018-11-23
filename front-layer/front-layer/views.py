@@ -153,7 +153,10 @@ def create_listing(request):
     response = urllib.request.Request('http://exp-api:8000/create_listing/', data=data_encoded, method='POST')
 
     # Check if exp response says we passed incorrect info
-    # ADD ONCE EXP DONE!!!
+    # Check that exp layer says form data ok
+    if not response["success"]:
+        error = response["error"]
+        return render(request, 'front-layer/create_account.html', {'form': form, 'error': error})
 
     return render(request, "front-layer/create_listing_success.html")
 
