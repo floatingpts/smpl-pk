@@ -153,6 +153,39 @@ def musician_login(request):
         return HttpResponse(status=501)
 
 @csrf_exempt
+def create_listing(request):
+	if request.method == 'POST':
+		# Get auth token and form data
+		query = request.POST
+		auth = query.get('authenticator')
+		auth_valid = False
+
+		# Check authenticator is valid		
+		try:
+			authenticator = Authenticator.objects.get(authenticator=auth)
+			auth_valid = True
+		except Authenticator.DoesNotExist:
+			return HttpResponse(status=404)
+
+		# Create a new pack if auth is valid
+		if(auth_valid):
+			new_pack = SamplePack.objects.create(
+				name=query.get('name'),
+				description=query.get('description'),
+				price=query.get('price'))
+			new_pack.save()
+			serializer = SamplePackSerializer(new_pack)
+			return JsonResponse(serializer.data)
+		else:
+			# return 401 (unauthorized request)
+			return HttpResponse(status=401)
+	else:
+		# We want the API to be called as a POST request with the arguments.
+        # >>> 501 Error Code: Not Implemented (i.e. wrong request).
+		return HttpResponse(status=501)
+
+
+@csrf_exempt
 def musician_logout(request):
     # Get auth information from request key-value pairs.
     logout_info = request.GET
