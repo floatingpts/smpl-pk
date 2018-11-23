@@ -211,11 +211,11 @@ def create_account(request):
 def search_results(request):
     template = loader.get_template('front-layer/search_results.html')
 
-    #CHANGE THESE LINES TO RETRIEVE SEARCH RESULTS FROM EXP LAYER
-    request_top_5 = urllib.request.Request('http://exp-api:8000/home/')
-    json_top_5 = urllib.request.urlopen(request_top_5).read().decode('utf-8')
-    top_5 = json.loads(json_top_5)
-    context = top_5
+    #retrieve search results from exp layer
+    searchResults = urllib.request.Request('http://exp-api:8000/search/')
+    json_results = urllib.request.urlopen(searchResults).read().decode('utf-8')
+    results = json.loads(json_results)
+    context = results
  
     #add logged-in info
     context['loggedIn'] = is_user_logged_in(request)

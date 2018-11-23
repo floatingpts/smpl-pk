@@ -141,3 +141,7 @@ def create_listing(authenticator, data):
   # ...
   # Return a JsonResponse to the front-end specifying whether creation was successful and user was logged-in.
   pass
+
+def search(request):
+  # call elastic search to find results based on user's search
+  pass
