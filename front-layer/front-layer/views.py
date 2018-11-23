@@ -66,22 +66,47 @@ def user_detail(request, pk):
     return HttpResponse(template.render(context, request))
 
 @csrf_exempt
-def login(request, **kwargs):
+def login(request):
     # Check if user logged in (for login/logout link)
     logged_in = is_user_logged_in(request)
 
+    # Display login page
     if request.method == 'GET':
+        # Get query component from URL.
+        query_string = request.META["QUERY_STRING"]
+        parsed_queries = urllib.parse.parse_qs(query_string)
+        next_from_url = parsed_queries.get('next')
+        if next_from_url:
+            # Only get the first parameter if it exists
+            next_from_url = next_from_url[0]
+
         # Display login form
         form = LoginForm()
-        return render(request, 'front-layer/login.html', {'form': form, 'error': '', 'loggedIn': logged_in})
+        return render(
+            request,
+            'front-layer/login.html',
+            {
+            'form': form,
+            'loggedIn': logged_in,
+            'next': next_from_url})
 
     # Create new Login form instance
     form = LoginForm(request.POST)
 
     # Check if form is valid
     if not form.is_valid():
-        #Form error, send back to login page with form errors
-        return render(request, 'front-layer/login.html', {'form': form, 'error': '', 'loggedIn': logged_in})
+        # Form error, send back to login page with form errors. Just hope for the best
+        # that the next field is incorrect since we set it.
+        return render(
+            request,
+            'front-layer/login.html',
+            {
+                'form': form,
+                'error': 'There was a problem with one of your inputs',
+                'loggedIn': logged_in,
+                'next': form.cleaned_data['next']
+            }
+        )
 
     # Get form data
     username = form.cleaned_data['username']
@@ -89,8 +114,11 @@ def login(request, **kwargs):
     form_data = {'username': username, 'password': password}
     encoded_data = urllib.parse.urlencode(form_data).encode('utf-8')
 
-    # Get next page from form, URL request, and home in that order of priority.
-    next_page = form.cleaned_data.get('next') or reverse('home')
+    # Get next page from query string.
+    if form.cleaned_data['next'] == 'None':
+        next_page = reverse('home')
+    else:
+        next_page = form.cleaned_data['next']
 
     # Send form data to exp layer
     response_request = urllib.request.Request('http://exp-api:8000/login/', data=encoded_data, method='POST')
@@ -102,7 +130,7 @@ def login(request, **kwargs):
     # Check that exp layer says form data ok
     if not response["success"]:
         error = response["error"]
-        return render(request, 'front-layer/login.html', {'form': form, 'error': error, 'loggedIn': logged_in})
+        return render(request, 'front-layer/login.html', {'form': form, 'error': error, 'loggedIn': logged_in, 'next': next_page})
 
     # Can now log user in, set login cookie
     authenticator = response["response"]["authenticator"]
@@ -130,7 +158,7 @@ def create_listing(request):
     logged_in = is_user_logged_in(request)
     if not logged_in:
         # Remove extra forward slashes.
-        return HttpResponseRedirect(reverse('login'))
+        return HttpResponseRedirect("%s?next=%s" % (reverse('login'), reverse('create_listing')))
 
     # GET the form for users
     if request.method == 'GET':

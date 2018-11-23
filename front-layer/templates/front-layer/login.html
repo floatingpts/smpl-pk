@@ -23,10 +23,14 @@
     <form method="post" action="{% url 'login' %}">
       {% csrf_token %}
       {% for field in form %}
+      {% if field.label == 'Next' %}
+      <input name="next" value="{{ next }}" id="id_next" hidden style='display:none'>
+      {% else %}
       <div class="form-group">
         {{ field.label_tag }}
         {{ field }}
       </div>
+      {% endif %}
       {% endfor %}
       <input class="btn btn-primary" type="submit" value="Login"/>
     </form>
