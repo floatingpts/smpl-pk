@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 import django.contrib.auth.hashers
 from django.http import JsonResponse
+from elasticsearch import Elasticsearch
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -143,5 +144,11 @@ def create_listing(authenticator, data):
   pass
 
 def search(request):
+  # declare Elasticsearch
+  es = Elasticsearch(['es'])
+  # update search (for any recently added listings)
+  es.indices.refresh(index="listing_index")
   # call elastic search to find results based on user's search
-  pass
+  # TODO: change query to match request input
+  results = es.search(index='listing_index', body={'query': {'query_string': {'query': 'macbook air'}}, 'size': 10})
+  return JsonResponse(results)
