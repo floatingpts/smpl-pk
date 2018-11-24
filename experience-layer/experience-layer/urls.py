@@ -9,5 +9,5 @@ urlpatterns = [
     path('create_account/', views.create_account),
     path('create_listing/', views.create_listing),
     path('logout/', views.logout),
-    path('search/', views.search)
+    path('search/', views.search),
 ]
