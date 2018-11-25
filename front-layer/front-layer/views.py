@@ -155,7 +155,11 @@ def create_listing(request):
 
     # Send form data to exp layer
     data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
-    response = urllib.request.Request('http://exp-api:8000/create_listing/', data=data_encoded, method='POST')
+    response_request = urllib.request.Request('http://exp-api:8000/create_listing/', data=data_encoded, method='POST')
+
+    # Get response back and convert from JSON.
+    json_response = urllib.request.urlopen(response_request).read().decode("utf-8")
+    response = json.loads(json_response)
 
     # Check if exp response says we passed incorrect info
     # Check that exp layer says form data ok
