@@ -141,6 +141,11 @@ def create_listing(request):
     # Otherwise, create new form instance
     form = ListingForm(request.POST)
 
+    # Check if form is valid
+    if not form.is_valid():
+        # Form error, send back to sign-up page with an error ADD ERROR
+        return render('front-layer/create_account.html', {'form': form, 'error': ''})
+
     # Retrieve form data
     name = form.cleaned_data['name']
     description = form.cleaned_data['description']
@@ -176,8 +181,9 @@ def create_account(request):
 
     # Check if form is valid
     if not form.is_valid():
-        #Form error, send back to sign-up page with an error ADD ERROR
+        # Form error, send back to sign-up page with an error ADD ERROR
         return render('front-layer/create_account.html', {'form': form, 'error': ''})
+
     # Get form data
     username = form.cleaned_data['username']
     password = form.cleaned_data['password']
