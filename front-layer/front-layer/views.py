@@ -147,8 +147,8 @@ def create_listing(request):
         return render('front-layer/create_account.html', {'form': form, 'error': ''})
 
     # Retrieve form data
-    name = form.cleaned_data['name']
-    description = form.cleaned_data['description']
+    name = form.cleaned_data['sample_name']
+    description = form.cleaned_data['sample_description']
     price = form.cleaned_data['price']
     authenticator = request.COOKIES.get('authenticator')
     form_data = {'name': name, 'description': description, 'price': price, 'authenticator': authenticator}
