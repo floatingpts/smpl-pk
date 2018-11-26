@@ -138,9 +138,13 @@ def create_account(request):
 @csrf_exempt
 def create_listing(request):
   # Pass data along to model API to create a new entry.
-  response_request = urllib.request.Request('http://models-api:8000/api/create_listing/', data=request.body, method='POST')
+  data=request.body
+  response_request = urllib.request.Request('http://models-api:8000/api/create_listing/', data, method='POST')
   try:
     response = urllib.request.urlopen(response_request)
+    # Add listing to search index
+    es = Elasticsearch(['es'])
+    #TODO convert data to json and add data to es
   except urllib.error.HTTPError as e:
     # Handle error
     if e.code == 401:

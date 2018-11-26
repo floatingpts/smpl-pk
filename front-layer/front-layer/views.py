@@ -55,9 +55,9 @@ def pack_detail(request, pk):
 def user_detail(request, pk):
     # Check if user logged in (for login/logout link)
     logged_in = is_user_logged_in(request)
-    template = loader.get_template('front-layer/musician_detail.html')
+    template = loader.get_template('front-layer/user_profile.html')
     request_musician = urllib.request.Request('http://exp-api:8000/musician_detail/' + str(pk) + '/')
-    json_musician = urllib.request.urlopen(request_pack).read().decode('utf-8')
+    json_musician = urllib.request.urlopen(request_musician).read().decode('utf-8')
     musician = json.loads(json_musician)
     context = musician
     #add logged-in info
