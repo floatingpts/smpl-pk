@@ -134,10 +134,34 @@ def create_account(request):
   }
   return JsonResponse(data)
 
-def create_listing(authenticator, data):
-  # Pass authenticator to model API for verification.
-  # ...
+@csrf_exempt
+def create_listing(request):
   # Pass data along to model API to create a new entry.
-  # ...
+  response_request = urllib.request.Request('http://models-api:8000/api/create_listing/', data=request.body, method='POST')
+  try:
+    response = urllib.request.urlopen(response_request)
+  except urllib.error.HTTPError as e:
+    # Handle error
+    if e.code == 401:
+        data = {
+          "success": False,
+          "error": "Please log in before creating a listing.",
+        }
+        return JsonResponse(data)
+    else:
+        data = {
+          "success": False,
+          "error": "Unknown error code %s." % e.code,
+        }
+        return JsonResponse(data)
+
   # Return a JsonResponse to the front-end specifying whether creation was successful and user was logged-in.
-  pass
+  decoded_response = response.read().decode('utf-8')
+  pack_data = json.loads(decoded_response)
+
+  data = {
+    "response": pack_data,
+    "success": True
+  }
+
+  return JsonResponse(data)
