@@ -1,5 +1,5 @@
 <head>
-  <title>Login</title>
+    <title>Add Listing</title>
 </head>
 
 {% extends 'front-layer/base.html' %}
@@ -17,26 +17,19 @@
 {% endif %}
 <div class="card" style="width: 30rem;">
   <div class="card-header">
-    Please sign in
+    Create Listing
   </div>
   <div class="card-body">
-    <form method="post" action="{% url 'login' %}">
-      {% csrf_token %}
+  	<form method="post" action="{% url 'create_listing' %}">
+  	  {% csrf_token %}
       {% for field in form %}
-      {% if field.label == 'Next' %}
-      <input name="next" value="{{ next }}" id="id_next" hidden style='display:none'>
-      {% else %}
       <div class="form-group">
         {{ field.label_tag }}
         {{ field }}
       </div>
-      {% endif %}
       {% endfor %}
-      <input class="btn btn-primary" type="submit" value="Login"/>
-    </form>
-    <a class="small" href="{% url 'create_account' %}">Or sign up instead!</a>
+  	  <input class="btn btn-primary" type="submit" value="Submit"/>
+  	</form>
   </div>
-</div>
-<!-- /row -->
 </div>
 {% endblock %}

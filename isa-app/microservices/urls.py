@@ -19,4 +19,5 @@ urlpatterns = [
     path('musician_login/', views.musician_login),
     path('musician_logout/', views.musician_logout),
     path('musician_create_account/', views.musician_create_account),
+    path('create_listing/', views.create_listing)
 ]

@@ -12,7 +12,7 @@ class ListingForm(forms.Form):
     sample_description = forms.CharField(
         label='Description',
         max_length=1000,
-        widget=forms.TextInput(
+        widget=forms.Textarea(
             attrs={'class':'form-control', 'placeholder':'Sample description'}
         )
     )
@@ -61,5 +61,12 @@ class LoginForm(forms.Form):
         max_length=100,
         widget=forms.PasswordInput(
             attrs={'class':'form-control', 'placeholder':'Password'}
+        )
+    )
+    next = forms.CharField(
+        label='Next',
+        max_length=25,
+        widget=forms.TextInput(
+            attrs={'class':'form-control'}
         )
     )
