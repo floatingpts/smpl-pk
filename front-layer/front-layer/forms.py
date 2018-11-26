@@ -63,3 +63,10 @@ class LoginForm(forms.Form):
             attrs={'class':'form-control', 'placeholder':'Password'}
         )
     )
+    next = forms.CharField(
+        label='Next',
+        max_length=25,
+        widget=forms.TextInput(
+            attrs={'class':'form-control'}
+        )
+    )
