@@ -170,11 +170,12 @@ def create_listing(request):
     form = ListingForm(request.POST)
 
     # Retrieve form data
-    name = form.cleaned_data['name']
-    description = form.cleaned_data['description']
-    price = form.cleaned_data['price']
-    authenticator = request.COOKIES.get('authenticator')
-    form_data = {'name': name, 'description': description, 'price': price, 'authenticator': authenticator}
+    if form.is_valid():
+        name = form.cleaned_data['sample_name']
+        description = form.cleaned_data['sample_description']
+        price = form.cleaned_data['price']
+        authenticator = request.COOKIES.get('authenticator')
+        form_data = {'name': name, 'description': description, 'price': price, 'authenticator': authenticator}
 
     # Send form data to exp layer
     data_encoded = urllib.parse.urlencode(form_data).encode('utf-8')
