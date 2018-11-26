@@ -12,7 +12,7 @@ class ListingForm(forms.Form):
     sample_description = forms.CharField(
         label='Description',
         max_length=1000,
-        widget=forms.TextInput(
+        widget=forms.Textarea(
             attrs={'class':'form-control', 'placeholder':'Sample description'}
         )
     )

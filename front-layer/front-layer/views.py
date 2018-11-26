@@ -80,7 +80,7 @@ def login(request, **kwargs):
 
     # Check if form is valid
     if not form.is_valid():
-        #Form error, send back to login page with form errors
+        # Form error, send back to login page with form errors
         return render(request, 'front-layer/login.html', {'form': form, 'error': '', 'loggedIn': logged_in})
 
     # Get form data
@@ -126,6 +126,7 @@ def logout(request):
     home.delete_cookie('authenticator')
     return home
 
+@csrf_exempt
 def create_listing(request):
     logged_in = is_user_logged_in(request)
     if not logged_in:
@@ -143,8 +144,8 @@ def create_listing(request):
 
     # Check if form is valid
     if not form.is_valid():
-        # Form error, send back to sign-up page with an error ADD ERROR
-        return render('front-layer/create_account.html', {'form': form, 'error': ''})
+        # Form error, send back to page with an error
+        return render('front-layer/create_listing.html', {'form': form, 'error': 'Form was not valid!', 'loggedIn': logged_in})
 
     # Retrieve form data
     name = form.cleaned_data['sample_name']
@@ -165,9 +166,9 @@ def create_listing(request):
     # Check that exp layer says form data ok
     if not response["success"]:
         error = response["error"]
-        return render(request, 'front-layer/create_account.html', {'form': form, 'error': error})
+        return render(request, 'front-layer/create_listing.html', {'form': form, 'error': error, 'loggedIn': logged_in})
 
-    return render(request, "front-layer/create_listing_success.html")
+    return render(request, "front-layer/create_listing.html", {'form': form, 'success': 'Your pack was successfully added!', 'loggedIn': logged_in})
 
 def create_account(request):
     # A user cannot create a new account while logged in.

@@ -134,40 +134,26 @@ def create_account(request):
   }
   return JsonResponse(data)
 
-def create_listing(authenticator, data):
-  listing_data = request.GET
-  auth = listing_data['authenticator']
-  url = 'http://models-api:8000/api/musician_logout/?authenticator=%s' % auth
-  
-  # Pass authenticator to model API for verification.
-  auth_request = urllib.request.Request(url)
-  try:
-    response = urllib.request.urlopen(auth_request)
-  except urllib.error.HTTPError as e:
-    if e.code == 404:
-      data = {
-        "success": False,
-        "error": "User could not be found (is not logged in).",
-        }
-      return JsonResponse(data)
-    else:
-      data = {
-        "success": False,
-        "error": "Unknown error code %s." % e.code,
-        }
-      return JsonResponse(data)
-
+@csrf_exempt
+def create_listing(request):
   # Pass data along to model API to create a new entry.
   response_request = urllib.request.Request('http://models-api:8000/api/create_listing/', data=request.body, method='POST')
   try:
     response = urllib.request.urlopen(response_request)
   except urllib.error.HTTPError as e:
-    #handle error
-    data = {
-      "success": False,
-      "error": "Unknown error code %s." % e.code,
-    }
-    return JsonResponse(data)
+    # Handle error
+    if e.code == 401:
+        data = {
+          "success": False,
+          "error": "Please log in before creating a listing.",
+        }
+        return JsonResponse(data)
+    else:
+        data = {
+          "success": False,
+          "error": "Unknown error code %s." % e.code,
+        }
+        return JsonResponse(data)
 
   # Return a JsonResponse to the front-end specifying whether creation was successful and user was logged-in.
   decoded_response = response.read().decode('utf-8')
@@ -179,5 +165,3 @@ def create_listing(authenticator, data):
   }
 
   return JsonResponse(data)
-
-

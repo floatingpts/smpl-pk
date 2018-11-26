@@ -41,29 +41,29 @@ def musician_list(request):
 
 @csrf_exempt
 def musician_detail(request, pk):
-	"""
-	CRUD methods for Musician model
-	"""
-	try:
-		musician = Musician.objects.get(pk=pk)
-	except Musician.DoesNotExist:
-		return HttpResponse(status=404)
+    """
+    CRUD methods for Musician model
+    """
+    try:
+        musician = Musician.objects.get(pk=pk)
+    except Musician.DoesNotExist:
+        return HttpResponse(status=404)
 
-	if request.method == 'GET':
-		serializer = MusicianSerializer(musician)
-		return JsonResponse(serializer.data)
+    if request.method == 'GET':
+        serializer = MusicianSerializer(musician)
+        return JsonResponse(serializer.data)
 
-	elif request.method == 'PUT':
-		data = JSONParser().parse(request)
-		serializer = MusicianSerializer(musician, data=data)
-		if serializer.is_valid():
-			serializer.save()
-			return JsonResponse(serializer.data)
-		return JsonResponse(serializer.errors, status=400)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = MusicianSerializer(musician, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
-	elif request.method == 'DELETE':
-		musician.delete()
-		return HttpResponse(status=204)
+    elif request.method == 'DELETE':
+        musician.delete()
+        return HttpResponse(status=204)
 
 @csrf_exempt
 def musician_create_account(request):
@@ -154,35 +154,29 @@ def musician_login(request):
 
 @csrf_exempt
 def create_listing(request):
-	if request.method == 'POST':
-		# Get auth token and form data
-		query = request.POST
-		auth = query.get('authenticator')
-		auth_valid = False
+    if request.method == 'POST':
+        # Get auth token and form data
+        query = request.POST
+        auth = query.get('authenticator')
 
-		# Check authenticator is valid		
-		try:
-			authenticator = Authenticator.objects.get(authenticator=auth)
-			auth_valid = True
-		except Authenticator.DoesNotExist:
-			return HttpResponse(status=404)
+        # Check authenticator is valid
+        try:
+            Authenticator.objects.get(authenticator=auth)
+        except Authenticator.DoesNotExist:
+            return HttpResponse(status=401)
 
-		# Create a new pack if auth is valid
-		if(auth_valid):
-			new_pack = SamplePack.objects.create(
-				name=query.get('name'),
-				description=query.get('description'),
-				price=query.get('price'))
-			new_pack.save()
-			serializer = SamplePackSerializer(new_pack)
-			return JsonResponse(serializer.data)
-		else:
-			# return 401 (unauthorized request)
-			return HttpResponse(status=401)
-	else:
-		# We want the API to be called as a POST request with the arguments.
+        # Create a new pack if auth is valid
+        new_pack = SamplePack.objects.create(
+            name=query.get('name'),
+            description=query.get('description'),
+            price=query.get('price'))
+        new_pack.save()
+        serializer = SamplePackSerializer(new_pack)
+        return JsonResponse(serializer.data)
+    else:
+        # We want the API to be called as a POST request with the arguments.
         # >>> 501 Error Code: Not Implemented (i.e. wrong request).
-		return HttpResponse(status=501)
+        return HttpResponse(status=501)
 
 
 @csrf_exempt
@@ -206,85 +200,85 @@ def musician_logout(request):
 
 @csrf_exempt
 def sample_list(request):
-	if request.method == 'GET':
-		samples = Sample.objects.all()
-		serializer = SampleSerializer(samples, many=True)
-		return JsonResponse(serializer.data, safe=False)
+    if request.method == 'GET':
+        samples = Sample.objects.all()
+        serializer = SampleSerializer(samples, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
-	if request.method == 'POST':
-		data = JSONParser().parse(request)
-		serializer = SampleSerializer(data=data)
-		if serializer.is_valid():
-			serializer.save()
-			return JsonResponse(serializer.data, status=201)
-		return JsonResponse(serializer.errors, status=400)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = SampleSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 @csrf_exempt
 def sample_detail(request, pk):
-	"""
-	CRUD methods for Musician model
-	"""
-	try:
-		sample = Sample.objects.get(pk=pk)
-	except Sample.DoesNotExist:
-		return HttpResponse(status=404)
+    """
+    CRUD methods for Musician model
+    """
+    try:
+        sample = Sample.objects.get(pk=pk)
+    except Sample.DoesNotExist:
+        return HttpResponse(status=404)
 
-	if request.method == 'GET':
-		serializer = SampleSerializer(sample)
-		return JsonResponse(serializer.data)
+    if request.method == 'GET':
+        serializer = SampleSerializer(sample)
+        return JsonResponse(serializer.data)
 
-	elif request.method == 'PUT':
-		data = JSONParser().parse(request)
-		serializer = SampleSerializer(sample, data=data)
-		if serializer.is_valid():
-			serializer.save()
-			return JsonResponse(serializer.data)
-		return JsonResponse(serializer.errors, status=400)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = SampleSerializer(sample, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
-	elif request.method == 'DELETE':
-		sample.delete()
-		return HttpResponse(status=204)
+    elif request.method == 'DELETE':
+        sample.delete()
+        return HttpResponse(status=204)
 
 @csrf_exempt
 def sample_pack_list(request):
-	if request.method == 'GET':
-		samplePacks = SamplePack.objects.all()
-		serializer = SamplePackSerializer(samplePacks, many=True)
-		return JsonResponse(serializer.data, safe=False)
+    if request.method == 'GET':
+        samplePacks = SamplePack.objects.all()
+        serializer = SamplePackSerializer(samplePacks, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
-	if request.method == 'POST':
-		data = JSONParser().parse(request)
-		serializer = SamplePackSerializer(data=data)
-		if serializer.is_valid():
-			serializer.save()
-			return JsonResponse(serializer.data, status=201)
-		return JsonResponse(serializer.errors, status=400)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = SamplePackSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 @csrf_exempt
 def sample_pack_detail(request, pk):
-	"""
-	CRUD methods for SamplePack model
-	"""
-	try:
-		samplePack = SamplePack.objects.get(pk=pk)
-	except SamplePack.DoesNotExist:
-		return HttpResponse(status=404)
+    """
+    CRUD methods for SamplePack model
+    """
+    try:
+        samplePack = SamplePack.objects.get(pk=pk)
+    except SamplePack.DoesNotExist:
+        return HttpResponse(status=404)
 
-	if request.method == 'GET':
-		serializer = SamplePackSerializer(samplePack)
-		return JsonResponse(serializer.data)
+    if request.method == 'GET':
+        serializer = SamplePackSerializer(samplePack)
+        return JsonResponse(serializer.data)
 
-	elif request.method == 'PUT':
-		data = JSONParser().parse(request)
-		serializer = SamplePackSerializer(samplePack, data=data)
-		if serializer.is_valid():
-			serializer.save()
-			return JsonResponse(serializer.data)
-		return JsonResponse(serializer.errors, status=400)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = SamplePackSerializer(samplePack, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
-	elif request.method == 'DELETE':
-		samplePack.delete()
-		return HttpResponse(status=204)
+    elif request.method == 'DELETE':
+        samplePack.delete()
+        return HttpResponse(status=204)
 
 @csrf_exempt
 def samples_in_pack(request, pk):
@@ -305,41 +299,41 @@ def top5_sample_packs(request):
 
 @csrf_exempt
 def authenticator_list(request):
-	if request.method == 'GET':
-		authenticators = Authenticator.objects.all()
-		serializer = AuthenticatorSerializer(authenticators, many=True)
-		return JsonResponse(serializer.data, safe=False)
+    if request.method == 'GET':
+        authenticators = Authenticator.objects.all()
+        serializer = AuthenticatorSerializer(authenticators, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
-	if request.method == 'POST':
-		data = JSONParser().parse(request)
-		serializer = AuthenticatorSerializer(data=data)
-		if serializer.is_valid():
-			serializer.save()
-			return JsonResponse(serializer.data, status=201)
-		return JsonResponse(serializer.errors, status=400)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = AuthenticatorSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 @csrf_exempt
 def authenticator_detail(request, pk):
-	"""
-	CRUD methods for Authenticator model
-	"""
-	try:
-		authenticator = Authenticator.objects.get(pk=pk)
-	except Authenticator.DoesNotExist:
-		return HttpResponse(status=404)
+    """
+    CRUD methods for Authenticator model
+    """
+    try:
+        authenticator = Authenticator.objects.get(pk=pk)
+    except Authenticator.DoesNotExist:
+        return HttpResponse(status=404)
 
-	if request.method == 'GET':
-		serializer = AuthenticatorSerializer(authenticator)
-		return JsonResponse(serializer.data)
+    if request.method == 'GET':
+        serializer = AuthenticatorSerializer(authenticator)
+        return JsonResponse(serializer.data)
 
-	elif request.method == 'PUT':
-		data = JSONParser().parse(request)
-		serializer = AuthenticatorSerializer(authenticator, data=data)
-		if serializer.is_valid():
-			serializer.save()
-			return JsonResponse(serializer.data)
-		return JsonResponse(serializer.errors, status=400)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = AuthenticatorSerializer(authenticator, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
-	elif request.method == 'DELETE':
-		authenticator.delete()
-		return HttpResponse(status=204)
+    elif request.method == 'DELETE':
+        authenticator.delete()
+        return HttpResponse(status=204)
