@@ -3,7 +3,7 @@
   "model": "microservices.musician",
   "pk": 2,
   "fields": {
-    "username": "you",
+    "username": "john",
     "email": "com@example.com",
     "password": "password",
     "follower_count": 19000,
@@ -164,6 +164,15 @@
     "minute_length": 2,
     "second_length": 2,
     "pack": 5
+  }
+},
+{
+  "model": "microservices.authenticator",
+  "pk": 1,
+  "fields": {
+    "user_id": 2,
+    "authenticator": "123456789qwertyuiop",
+    "date_created": "1998-05-28"
   }
 }
 ]
