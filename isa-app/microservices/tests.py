@@ -556,3 +556,184 @@ class DeleteSampleTestCase(TestCase):
         # Check that the sample no longer exists.
         get_response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":2}))
         self.assertEquals(get_response.status_code, 404)
+
+# ==================
+# Authenticator test cases.
+# ==================
+# CREATE/POST functionality.
+class CreateAuthenticatorTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_create_valid_authenticator(self):
+        # Add a new authenticator.
+        authenticator = {
+            "user-id": "tom",
+            "authenticator": 30491234,
+            "date-created": "1999-02-01"
+        }
+        self.client.post(
+                path=reverse('microservices:authenticator-list'),
+                data=authenticator,
+                content_type="application/json")
+
+        # Get the newly-created authenticator.
+        response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":1}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the POSTed authenticator is the same as before and is assigned an ID.
+        actual = json.loads(response.content.decode("utf-8"))
+        expected = authenticator
+        expected["user-id"] = "tom"
+        self.assertEquals(actual, expected)
+
+    def test_create_invalid_authenticator(self):
+        # Try to add a new invalid authenticator.
+        authenticator = {
+            "non_existing_field": "foo",
+        }
+        self.client.post(
+                path=reverse('microservices:authenticator-list'),
+                data=authenticator,
+                content_type="application/json")
+
+        # Get the newly-created authenticator.
+        response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":1}))
+
+        # Check that the authenticator was not added.
+        self.assertEquals(response.status_code, 404)
+
+# RETRIEVE/GET functionality.
+class RetrieveAuthenticatorDetailsTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_get_existing_authenticator(self):
+        # Assumes authenticator with ID 2 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":2}))
+
+        # Checks that the HTTP status code is 200.
+        self.assertEquals(response.status_code, 200)
+
+        # Get authenticator from JSON response.
+        # Django returns a byte string for the response content, which
+        # needs to be decoded. See https://stackoverflow.com/questions/606191/.
+        authenticator_json = response.content.decode("utf-8")
+        authenticator = json.loads(authenticator_json)
+        self.assertEquals(authenticator["id"], 2)
+
+    # Non-existing authenticator ID given in url, so error.
+    def test_get_non_existing_authenticator(self):
+        # Try to get a authenticator with an unused ID.
+        response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":25}))
+
+        # Check that no such authenticator exists.
+        self.assertEquals(response.status_code, 404)
+
+    def test_get_authenticator_invalid_id(self):
+        # Try to get a authenticator with an invalid ID (a string).
+        # Reverse can't be used because the resolver will try to match the url
+        # to the urlpattern, which validates whether the argument's type (in
+        # this case, the string doesn't match the <int:pk> parameter).
+        response = self.client.get('/api/authenticators/foo/')
+
+        # Check that no such authenticator exists.
+        self.assertEquals(response.status_code, 404)
+
+class RetrieveAuthenticatorListTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_get_authenticator_list(self):
+        # Assumes authenticator with ID 1 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:authenticator-list'))
+
+        # Checks that the HTTP status code is 200 OK.
+        self.assertEqual(response.status_code, 200)
+
+        # Get first element in response.
+        authenticator_list_json = response.content.decode("utf-8")
+        authenticator_list = json.loads(authenticator_list_json)
+        authenticator = authenticator_list[0]
+
+        # Check that 9 authenticators in list, with first authenticator having an ID of 1.
+        self.assertEquals(len(authenticator_list), 9)
+        self.assertEquals(authenticator["id"], 1)
+
+# UPDATE/PUT functionality.
+class UpdateAuthenticatorTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_update_valid_authenticator(self):
+        # Update the authenticator with ID 2.
+        updated_authenticator = {
+            "name": "sound",
+            "minute_length": 10,
+            "second_length": 0,
+            "pack": 2,
+        }
+        self.client.put(
+                path=reverse('microservices:authenticator-detail',
+                    kwargs={"pk":2}),
+                data=updated_authenticator,
+                content_type="application/json")
+
+        # Get the newly-updated authenticator.
+        response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":2}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the authenticator is updated.
+        json_authenticator = response.content.decode("utf-8")
+        actual_authenticator = json.loads(json_authenticator)
+        expected_authenticator = updated_authenticator
+        expected_authenticator["id"] = 2
+        self.assertEquals(actual_authenticator, expected_authenticator)
+
+    def test_update_invalid_authenticator(self):
+        # Get existing authenticator with ID 2.
+        old_authenticator_response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":2}))
+        old_json_authenticator = old_authenticator_response.content.decode("utf-8")
+        expected_authenticator = json.loads(old_json_authenticator)
+
+        # Try to update the authenticator with an invalid field.
+        invalid_updated_authenticator = {
+            "non_existing_field": "foo",
+        }
+        self.client.put(
+                path=reverse('microservices:authenticator-detail',
+                    kwargs={"pk":2}),
+                data=invalid_updated_authenticator,
+                content_type="application/json")
+
+        # Get the authenticator again.
+        new_authenticator_response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":2}))
+        new_json_authenticator = new_authenticator_response.content.decode("utf-8")
+        actual_authenticator = json.loads(new_json_authenticator)
+
+        # Check that the authenticator was not updated.
+        self.assertEquals(actual_authenticator, expected_authenticator)
+
+# DELETE/DEL functionality.
+class DeleteAuthenticatorTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_delete_authenticator(self):
+        # Verify authenticator with ID of 2 exists before continuing.
+        verify_exists_response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":2}))
+        self.assertEquals(verify_exists_response.status_code, 200)
+
+        # Delete authenticator with ID of 2.
+        # This returns a 204 No Content response, but there isn't really
+        # a consistent standard among RESTful APIs in regards for what to return
+        # so there's no need to validate this behavior.
+        self.client.delete(reverse('microservices:authenticator-detail', kwargs={"pk":2}))
+
+        # Check that the authenticator no longer exists.
+        get_response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":2}))
+        self.assertEquals(get_response.status_code, 404)
