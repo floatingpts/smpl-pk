@@ -14,7 +14,9 @@ class CreateMusicianTestCase(TestCase):
     def test_create_valid_musician(self):
         # Add a new musician.
         musician_to_create = {
-            "username": "john.smith99",
+            "username": "doug.smith99",
+            "email": "doug@mail.com",
+            "password": "123456789",
             "follower_count": 1,
             "balance": "20.00",
             "rating": 4,
@@ -48,7 +50,7 @@ class CreateMusicianTestCase(TestCase):
                 content_type="application/json")
 
         # Get the newly-created musician.
-        response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":3}))
+        response = self.client.get(reverse('microservices:musician-detail', kwargs={"pk":1}))
 
         # Check that the musician was not added.
         self.assertEquals(response.status_code, 404)
@@ -119,6 +121,8 @@ class UpdateMusicianTestCase(TestCase):
         # Update the musician with ID 2.
         updated_musician = {
             "username": "john.smith99",
+            "email": "john.smith@mail.com",
+            "password": "johniscool",
             "follower_count": 1,
             "balance": "20.00",
             "rating": 4,
@@ -555,4 +559,129 @@ class DeleteSampleTestCase(TestCase):
 
         # Check that the sample no longer exists.
         get_response = self.client.get(reverse('microservices:samples-detail', kwargs={"pk":2}))
+        self.assertEquals(get_response.status_code, 404)
+
+# ==================
+# Authenticator test cases.
+# ==================
+# CREATE/POST functionality.
+class CreateAuthenticatorTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_create_valid_authenticator(self):
+        # Add a new authenticator.
+        authenticator = {
+            "user_id": 2,
+            "authenticator": "987654321abcdef",
+            "date_created": "1999-02-01"
+        }
+        self.client.post(
+                path=reverse('microservices:authenticator-list'),
+                data=authenticator,
+                content_type="application/json")
+
+        # Get the newly-created authenticator.
+        response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":2}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the POSTed authenticator is the same as before and is assigned an ID.
+        actual = json.loads(response.content.decode("utf-8"))
+        expected = authenticator
+        expected["id"] = 2
+        self.assertEquals(actual, expected)
+
+    def test_create_invalid_authenticator(self):
+        # Try to add a new invalid authenticator.
+        authenticator = {
+            "non_existing_field": "foo",
+        }
+        self.client.post(
+                path=reverse('microservices:authenticator-list'),
+                data=authenticator,
+                content_type="application/json")
+
+        # Get the newly-created authenticator.
+        response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":2}))
+
+        # Check that the authenticator was not added.
+        self.assertEquals(response.status_code, 404)
+
+# RETRIEVE/GET functionality.
+class RetrieveAuthenticatorDetailsTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_get_existing_authenticator(self):
+        # Assumes authenticator with ID 1 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":1}))
+
+        # Checks that the HTTP status code is 200.
+        self.assertEquals(response.status_code, 200)
+
+        # Get authenticator from JSON response.
+        # Django returns a byte string for the response content, which
+        # needs to be decoded. See https://stackoverflow.com/questions/606191/.
+        authenticator_json = response.content.decode("utf-8")
+        authenticator = json.loads(authenticator_json)
+        self.assertEquals(authenticator["id"], 1)
+
+    # Non-existing authenticator ID given in url, so error.
+    def test_get_non_existing_authenticator(self):
+        # Try to get a authenticator with an unused ID.
+        response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":25}))
+
+        # Check that no such authenticator exists.
+        self.assertEquals(response.status_code, 404)
+
+    def test_get_authenticator_invalid_id(self):
+        # Try to get a authenticator with an invalid ID (a string).
+        # Reverse can't be used because the resolver will try to match the url
+        # to the urlpattern, which validates whether the argument's type (in
+        # this case, the string doesn't match the <int:pk> parameter).
+        response = self.client.get('/api/authenticators/foo/')
+
+        # Check that no such authenticator exists.
+        self.assertEquals(response.status_code, 404)
+
+class RetrieveAuthenticatorListTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_get_authenticator_list(self):
+        # Assumes authenticator with ID 1 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:authenticator-list'))
+
+        # Checks that the HTTP status code is 200 OK.
+        self.assertEqual(response.status_code, 200)
+
+        # Get first element in response.
+        authenticator_list_json = response.content.decode("utf-8")
+        authenticator_list = json.loads(authenticator_list_json)
+        authenticator = authenticator_list[0]
+
+        # Check that authenticator in list, with first authenticator having an ID of 1.
+        self.assertEquals(len(authenticator_list), 1)
+        self.assertEquals(authenticator["id"], 1)
+
+# DELETE/DEL functionality.
+class DeleteAuthenticatorTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_delete_authenticator(self):
+        # Verify authenticator with ID of 1 exists before continuing.
+        verify_exists_response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":1}))
+        self.assertEquals(verify_exists_response.status_code, 200)
+
+        # Delete authenticator with ID of 1.
+        # This returns a 204 No Content response, but there isn't really
+        # a consistent standard among RESTful APIs in regards for what to return
+        # so there's no need to validate this behavior.
+        self.client.delete(reverse('microservices:authenticator-detail', kwargs={"pk":1}))
+
+        # Check that the authenticator no longer exists.
+        get_response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":1}))
         self.assertEquals(get_response.status_code, 404)

@@ -326,14 +326,6 @@ def authenticator_detail(request, pk):
         serializer = AuthenticatorSerializer(authenticator)
         return JsonResponse(serializer.data)
 
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = AuthenticatorSerializer(authenticator, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
     elif request.method == 'DELETE':
         authenticator.delete()
         return HttpResponse(status=204)
