@@ -142,10 +142,9 @@ def create_listing(request):
   response_request = urllib.request.Request('http://models-api:8000/api/create_listing/', data, method='POST')
   try:
     response = urllib.request.urlopen(response_request)
-    # Add listing to search index
-    es = Elasticsearch(['es'])
-    #TODO convert data to json and add data to es
-  except urllib.error.HTTPError as e:
+    # Add listing to Kafka queue
+    #TODO convert data to json and add data to queue
+  except urllib.error.HTTPError fas e:
     # Handle error
     if e.code == 401:
         data = {
