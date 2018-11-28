@@ -1,16 +1,5 @@
 [
 {
-  "model": "microservices.musician",
-  "pk": 2,
-  "fields": {
-    "username": "daedrika",
-    "password": "donthackme",
-    "follower_count": 19000,
-    "balance": "5555555.55",
-    "rating": 5
-  }
-},
-{
   "model": "microservices.samplepack",
   "pk": 2,
   "fields": {
