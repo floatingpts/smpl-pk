@@ -253,17 +253,13 @@ def create_account(request):
 def search_results(request):
     template = loader.get_template('front-layer/search_results.html')
 
-    #Check if search input was blank
-    if 'query_text' in request.GET and request.GET['query_text']:
-        query = request.GET['query_text']
-        query_urlencoded = urllib.parse.urlencode(query)
-        # Retrieve search results from exp layer TODO: pass query to exp layer
-        searchResults = urllib.request.Request('http://exp-api:8000/search/' + '?' + query_urlencoded, method="GET")
-        json_results = urllib.request.urlopen(searchResults).read().decode('utf-8')
-        results = json.loads(json_results)
-        context = results
-    else:
-        context = { 'error': "No search information given" }
+    query = request.GET['query_text']
+    query_urlencoded = urllib.parse.urlencode(request.GET)
+    # Retrieve search results from exp layer
+    searchResults = urllib.request.Request('http://exp-api:8000/search/' + '?' + query_urlencoded, method="GET")
+    json_results = urllib.request.urlopen(searchResults).read().decode('utf-8')
+    results = json.loads(json_results)
+    context = results
 
  
     #add logged-in info
