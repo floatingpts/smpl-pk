@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 import django.contrib.auth.hashers
 from django.http import JsonResponse
 from elasticsearch import Elasticsearch
+from kafka import KafkaProducer
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -143,7 +144,8 @@ def create_listing(request):
   try:
     response = urllib.request.urlopen(response_request)
     # Add listing to Kafka queue
-    #TODO convert data to json and add data to queue
+    producer = KafkaProducer(bootstrap_servers='kafka:9092')
+    producer.send('new-listings-topic', data)
   except urllib.error.HTTPError fas e:
     # Handle error
     if e.code == 401:
