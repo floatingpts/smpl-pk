@@ -178,7 +178,7 @@ def search(request):
   query = request.GET.get('query_text')
 
   # Call ElasticSearch to find results based on user's search
-  es_request = urllib.request.Request('http://es:8000?q=%s' % query_text)
+  es_request = urllib.request.Request('http://es:8000?q=%s' % query)
   es_response = urllib.request.urlopen(es_request)
 
   # Decode the response.
