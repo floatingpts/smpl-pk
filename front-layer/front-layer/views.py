@@ -256,19 +256,15 @@ def search_results(request):
     #Check if search input was blank
     if 'query_text' in request.GET and request.GET['query_text']:
         query = request.GET['query_text']
+        query_urlencoded = urllib.parse.urlencode(query)
         # Retrieve search results from exp layer TODO: pass query to exp layer
-        searchResults = urllib.request.Request('http://exp-api:8000/search/')
+        searchResults = urllib.request.Request('http://exp-api:8000/search/' + '?' + query_urlencoded, method="GET")
         json_results = urllib.request.urlopen(searchResults).read().decode('utf-8')
         results = json.loads(json_results)
         context = results
     else:
         context = { 'error': "No search information given" }
 
-    #TEMP (so page will load for testing)
-    request_top_5 = urllib.request.Request('http://exp-api:8000/home/')
-    json_top_5 = urllib.request.urlopen(request_top_5).read().decode('utf-8')
-    top_5 = json.loads(json_top_5)
-    context = top_5
  
     #add logged-in info
     context['loggedIn'] = is_user_logged_in(request)
