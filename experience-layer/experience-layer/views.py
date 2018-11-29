@@ -175,14 +175,20 @@ def create_listing(request):
 
 def search(request):
   # Get query text.
+  # Should already be url encoded.
   query = request.GET.get('query_text')
 
   # Call ElasticSearch to find results based on user's search
-  es_request = urllib.request.Request('http://es:8000?q=%s' % query)
+  es_request = urllib.request.Request('http://es:9200/listing_index/_search?q=%s' % query)
   es_response = urllib.request.urlopen(es_request)
 
   # Decode the response.
   results = es_response.read().decode('utf-8')
   data = json.loads(results)
+
+  # Format JSON object:
+  # - Elements in a list, ID ordered by highest score
+  # - Each element is just the fields of the result (fields of the packs)
+  # - Errors field with description of error if present (timeout, failed, etc)
 
   return JsonResponse(data)
