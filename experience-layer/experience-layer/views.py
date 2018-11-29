@@ -146,7 +146,7 @@ def create_listing(request):
     # Add listing to Kafka queue
     producer = KafkaProducer(bootstrap_servers='kafka:9092')
     producer.send('new-listings-topic', data)
-  except urllib.error.HTTPError fas e:
+  except urllib.error.HTTPError as e:
     # Handle error
     if e.code == 401:
         data = {
