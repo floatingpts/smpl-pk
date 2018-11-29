@@ -174,11 +174,15 @@ def create_listing(request):
   return JsonResponse(data)
 
 def search(request):
-  # declare Elasticsearch
-  es = Elasticsearch(['es'])
-  # update search (for any recently added listings)
-  es.indices.refresh(index="listing_index")
-  # call elastic search to find results based on user's search
-  # TODO: change query to match request input
-  results = es.search(index='listing_index', body={'query': {'query_string': {'query': 'macbook air'}}, 'size': 10})
-  return JsonResponse(results)
+  # Get query text.
+  query = request.GET.get('query_text')
+
+  # Call ElasticSearch to find results based on user's search
+  es_request = urllib.request.Request('http://es:8000?q=%s' % query_text)
+  es_response = urllib.request.urlopen(es_request)
+
+  # Decode the response.
+  results = es_response.read().decode('utf-8')
+  data = json.loads(results)
+
+  return JsonResponse(data)
