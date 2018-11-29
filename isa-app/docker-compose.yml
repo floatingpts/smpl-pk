@@ -20,6 +20,7 @@ exp:
     container_name: exp
     links:
         - models:models-api
+        - es:es
     ports:
         - "8002:8000"
     volumes:
