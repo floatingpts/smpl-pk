@@ -142,10 +142,8 @@ def create_listing(request):
   data=request.body
   response_request = urllib.request.Request('http://models-api:8000/api/create_listing/', data, method='POST')
   try:
+    # Pass the listing.
     response = urllib.request.urlopen(response_request)
-    # Add listing to Kafka queue
-    producer = KafkaProducer(bootstrap_servers='kafka:9092')
-    producer.send('new-listings-topic', data)
   except urllib.error.HTTPError as e:
     # Handle error
     if e.code == 401:
@@ -161,10 +159,15 @@ def create_listing(request):
         }
         return JsonResponse(data)
 
+
   # Return a JsonResponse to the front-end specifying whether creation was successful and user was logged-in.
 
   decoded_response = response.read().decode('utf-8')
   pack_data = json.loads(decoded_response)
+
+  # Insert the listing into the Kafka queue.
+  producer = KafkaProducer(bootstrap_servers='kafka:9092')
+  producer.send('new-listings', json.dumps(pack_data).encode('utf-8'))
 
   data = {
     "response": pack_data,
