@@ -58,4 +58,6 @@ batch:
    links:
       - kafka:kafka
       - es:es
-   command: "python batchScript.py"
+   volumes:
+        - ../isa-app:/app
+   command: python3 batchScript.py
