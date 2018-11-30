@@ -253,16 +253,18 @@ def create_account(request):
 def search_results(request):
     template = loader.get_template('front-layer/search_results.html')
 
-    query = request.GET['query_text']
-    query_urlencoded = urllib.parse.urlencode(request.GET)
+    query = { 'query' : request.GET['query_text'] }
+    query_encoded = urllib.parse.urlencode(query)
+
     # Retrieve search results from exp layer
-    searchResults = urllib.request.Request('http://exp-api:8000/search/' + '?' + query_urlencoded, method="GET")
-    json_results = urllib.request.urlopen(searchResults).read().decode('utf-8')
+    search_request = urllib.request.Request('http://exp-api:8000/_search?q=%s' % query_encoded)
+    response = urllib.request.urlopen(search_request)
+    
+    # decode the response into json
+    json_response = response.read().decode('utf-8')
     results = json.loads(json_results)
-    context = results
 
- 
-    #add logged-in info
-    context['loggedIn'] = is_user_logged_in(request)
+    # add logged-in info
+    results['loggedIn'] = is_user_logged_in(request)
 
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(results, request))
