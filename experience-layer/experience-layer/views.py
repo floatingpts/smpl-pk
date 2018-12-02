@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 import django.contrib.auth.hashers
 from django.http import JsonResponse
+from elasticsearch import Elasticsearch
+from kafka import KafkaProducer
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -137,8 +139,10 @@ def create_account(request):
 @csrf_exempt
 def create_listing(request):
   # Pass data along to model API to create a new entry.
-  response_request = urllib.request.Request('http://models-api:8000/api/create_listing/', data=request.body, method='POST')
+  data=request.body
+  response_request = urllib.request.Request('http://models-api:8000/api/create_listing/', data, method='POST')
   try:
+    # Pass the listing.
     response = urllib.request.urlopen(response_request)
   except urllib.error.HTTPError as e:
     # Handle error
@@ -155,13 +159,50 @@ def create_listing(request):
         }
         return JsonResponse(data)
 
+
   # Return a JsonResponse to the front-end specifying whether creation was successful and user was logged-in.
+
   decoded_response = response.read().decode('utf-8')
   pack_data = json.loads(decoded_response)
+
+  # Insert the listing into the Kafka queue.
+  producer = KafkaProducer(bootstrap_servers='kafka:9092')
+  producer.send('sample-pack-listings', json.dumps(pack_data).encode('utf-8'))
 
   data = {
     "response": pack_data,
     "success": True
   }
+
+  return JsonResponse(data)
+
+def search(request):
+  # Get query text.
+  # Should already be url encoded.
+  query = request.GET.get('query_text')
+
+  # Call ElasticSearch to find results based on user's search.
+  es = Elasticsearch(['es'])
+  # Get the top 10 results.
+  results = es.search(index='listing_index', body={'query': {'query_string': {'query': query }}, 'size': 10})
+
+  # Format JSON object:
+  # - Elements in a list, ID ordered by highest score
+  # - Each element is just the fields of the result (fields of the packs)
+  # - Errors field with description of error if present (timeout, failed, etc)
+  results_count = results['hits']['total']
+  if results_count == 0:
+      return JsonResponse({
+          'success': False,
+          'error': 'No results were found for your search.'
+      })
+
+  hits = results['hits']['hits']
+  data = {
+      'hits': [],
+      'success': True,
+  }
+  for listing in hits:
+      data['hits'].append(listing['_source'])
 
   return JsonResponse(data)

@@ -55,9 +55,9 @@ def pack_detail(request, pk):
 def user_detail(request, pk):
     # Check if user logged in (for login/logout link)
     logged_in = is_user_logged_in(request)
-    template = loader.get_template('front-layer/musician_detail.html')
+    template = loader.get_template('front-layer/user_profile.html')
     request_musician = urllib.request.Request('http://exp-api:8000/musician_detail/' + str(pk) + '/')
-    json_musician = urllib.request.urlopen(request_pack).read().decode('utf-8')
+    json_musician = urllib.request.urlopen(request_musician).read().decode('utf-8')
     musician = json.loads(json_musician)
     context = musician
     #add logged-in info
@@ -196,7 +196,7 @@ def create_listing(request):
         error = response["error"]
         return render(request, 'front-layer/create_listing.html', {'form': form, 'error': error, 'loggedIn': logged_in})
 
-    return render(request, "front-layer/create_listing.html", {'form': form, 'success': 'Your pack was successfully added!', 'loggedIn': logged_in})
+    return render(request, "front-layer/create_listing.html", {'form': form, 'success': 'Your pack was successfully added! (ID=%s)' % response["response"]["id"], 'loggedIn': logged_in})
 
 def create_account(request):
     # A user cannot create a new account while logged in.
@@ -249,3 +249,18 @@ def create_account(request):
     response.set_cookie("authenticator", authenticator)
 
     return response
+
+def search_results(request):
+    # Get query from GET parameters.
+    query_encoded = urllib.parse.urlencode(request.GET)
+
+    # Retrieve search results from exp layer
+    search_request = urllib.request.Request('http://exp-api:8000/search?query_text=%s' % query_encoded)
+    response = urllib.request.urlopen(search_request)
+
+    # Decode the response from JSON into a dict
+    json_response = response.read().decode('utf-8')
+    results = json.loads(json_response)
+
+    return render(request, 'front-layer/search_results.html', {'loggedIn': is_user_logged_in(request), 'results': results.get("hits")}
+    )
