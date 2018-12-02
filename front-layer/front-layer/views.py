@@ -196,7 +196,7 @@ def create_listing(request):
         error = response["error"]
         return render(request, 'front-layer/create_listing.html', {'form': form, 'error': error, 'loggedIn': logged_in})
 
-    return render(request, "front-layer/create_listing.html", {'form': form, 'success': 'Your pack was successfully added!', 'loggedIn': logged_in})
+    return render(request, "front-layer/create_listing.html", {'form': form, 'success': 'Your pack was successfully added! (ID=%s)' % response["response"]["id"], 'loggedIn': logged_in})
 
 def create_account(request):
     # A user cannot create a new account while logged in.
@@ -251,20 +251,19 @@ def create_account(request):
     return response
 
 def search_results(request):
-    template = loader.get_template('front-layer/search_results.html')
-
-    #query = { 'query' : request.GET['query_text'] }
+    # Get query from GET parameters.
     query_encoded = urllib.parse.urlencode(request.GET)
 
     # Retrieve search results from exp layer
-    search_request = urllib.request.Request('http://exp-api:8000/search?q=%s' % query_encoded)
+    search_request = urllib.request.Request('http://exp-api:8000/search?query_text=%s' % query_encoded)
     response = urllib.request.urlopen(search_request)
-    
-    # decode the response into json
+
+    # Decode the response from JSON into a dict
     json_response = response.read().decode('utf-8')
-    results = json.loads(json_results)
+    results = json.loads(json_response)
 
-    # add logged-in info
-    results['loggedIn'] = is_user_logged_in(request)
-
-    return HttpResponse(template.render(results, request))
+    return render(
+        request,
+        'front-layer/search_results.html',
+        {'loggedIn': is_user_logged_in(request), 'results': results}
+    )
