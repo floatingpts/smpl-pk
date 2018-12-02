@@ -262,8 +262,5 @@ def search_results(request):
     json_response = response.read().decode('utf-8')
     results = json.loads(json_response)
 
-    return render(
-        request,
-        'front-layer/search_results.html',
-        {'loggedIn': is_user_logged_in(request), 'results': results}
+    return render(request, 'front-layer/search_results.html', {'loggedIn': is_user_logged_in(request), 'results': results.get("hits")}
     )

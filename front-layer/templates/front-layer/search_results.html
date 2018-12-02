@@ -6,16 +6,11 @@
 {% block content %}
 
 <div class="container">
-  
+  {% for pack in results %}
   <div style="background-color: #edf0f1; border-style: solid; border-color: #c0ccd1; padding: 10px">
-    <div style="float:right">Price</div>
-    <h4>Title</h4>
+    <div style="float:right">{{ pack.price }}</div>
+    <h4>{{ pack.name }}</h4>
   </div>
   <br>
-  
-  <div style="background-color: #edf0f1; border-style: solid; border-color: #c0ccd1; padding: 10px">
-    <div style="float:right">Price</div>
-    <h4>Title</h4>
-  </div>
-</div>
+  {% endfor %}
 {% endblock %}
