@@ -4,13 +4,18 @@
 
 {% extends 'front-layer/base.html' %}
 {% block content %}
-
 <div class="container">
   {% for pack in results %}
-  <div style="background-color: #edf0f1; border-style: solid; border-color: #c0ccd1; padding: 10px">
-    <div style="float:right">{{ pack.price }}</div>
-    <h4>{{ pack.name }}</h4>
+  <div class="card mb-2">
+    <div class="card-body">
+        <div class="media">
+            <div class="media-body">
+                <h4 class="card-title"><a href="{% url 'detail' pack.id %}">{{ pack.name }}</a></h4>
+                <h6 class="card-subtitle mb-2 text-muted">{{ pack.description }}</h5>
+            </div>
+            <a href="{% url 'detail' pack.id %}" class="btn-sm btn-success ml-3">{{ pack.price }}</a>
+        </div>
+    </div>
   </div>
-  <br>
   {% endfor %}
 {% endblock %}
