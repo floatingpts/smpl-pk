@@ -16,3 +16,4 @@ install:
   - sleep 10
 script:
   - python manage.py test
+  
