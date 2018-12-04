@@ -5,7 +5,7 @@ services:
 before_install:
   - docker pull mysql:5.7.23
 install:
-  - docker run --name mysql -d -e 
+  - docker docker run --name mysql -d -e MYSQL_ROOT_PASSWORD='$3cureUS' -v ~/cs4501/db:/var/lib/mysql  mysql:5.7.23
   - docker run -it --name mysql-cmdline --link mysql:db mysql:5.7.23 bash
   - mysql -uroot -p'$3cureUS' -h db MYSQL_ROOT_PASSWORD='$3cureUS' -v ../db:/var/lib/mysql  mysql:5.7.23
   - create user 'www'@'%' identified by '$3cureUS';
@@ -14,6 +14,6 @@ install:
   - sleep 10
   - docker-compose up
   - sleep 10
+before_script:
 script:
   - python manage.py test
-  
