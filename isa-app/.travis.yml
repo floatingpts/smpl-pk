@@ -6,11 +6,7 @@ before_install:
   - docker pull mysql:5.7.23
 install:
   - docker docker run --name mysql -d -e MYSQL_ROOT_PASSWORD='$3cureUS' -v ~/cs4501/db:/var/lib/mysql  mysql:5.7.23
-  - docker run -it --name mysql-cmdline --link mysql:db mysql:5.7.23 bash
-  - mysql -uroot -p'$3cureUS' -h db MYSQL_ROOT_PASSWORD='$3cureUS' -v ../db:/var/lib/mysql  mysql:5.7.23
-  - create user 'www'@'%' identified by '$3cureUS';
-  - create database cs4501 character set utf8;
-  - grant all on cs4501.* to 'www'@'%';
+  - docker run -it --name mysql-cmdline_test --link mysql:db -v ~/Documents/django/app/project6/smpl-pk/isa-app/setup.sql:/setup.sql mysql:5.7.23 bash -c "mysql -uroot -p'$3cureUS' -h db < /setup.sql"
   - sleep 10
   - docker-compose up
   - sleep 10
