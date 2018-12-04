@@ -8,6 +8,6 @@
 - ~~_Project 2:_ Implement models for the Django app.~~
 - ~~_Project 3:_ Create HTML front-end and improve APIs.~~
 - ~~_Project 4:_ Implement fully-functioned users.~~
-- _Project 5:_ Add listings and search engine.
+- ~~_Project 5:_ Add listings and search engine.~~
 - _Project 6:_ Miscellaneous development related stuff.
 - _Project 7:_ Recommendations, user stories.
