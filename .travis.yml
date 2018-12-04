@@ -1,0 +1,15 @@
+language: python
+services:
+  - docker
+  - mysql
+before_install:
+  - cd isa-app
+  - docker pull mysql:5.7.23
+install:
+  - docker docker run --name mysql -d -e MYSQL_ROOT_PASSWORD='$3cureUS' -v ~/cs4501/db:/var/lib/mysql  mysql:5.7.23
+  - docker run -it --name mysql-cmdline_test --link mysql:db -v ~/Documents/django/app/project6/smpl-pk/isa-app/setup.sql:/setup.sql mysql:5.7.23 mysql -uroot -p'$3cureUS' -h db < /setup.sql
+  - sleep 10
+  - docker-compose up
+  - sleep 10
+script:
+  - python manage.py test
