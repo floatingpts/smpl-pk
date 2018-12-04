@@ -39,6 +39,14 @@ web:
         - ../front-layer:/app
     command: "mod_wsgi-express start-server --reload-on-changes front-layer/wsgi.py"
 
+balancer:
+    image: haproxy
+    container_name: balancer
+    ports:
+        - "80:80"
+    links:
+        - web:host
+
 kafka:
    image: spotify/kafka
    container_name: kafka
