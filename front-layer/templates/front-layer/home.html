@@ -6,28 +6,23 @@
 </head>
 
 {% extends 'front-layer/base.html' %} {% block content %}
-<div class="jumbotron jumbotron-fluid">
-  <!--<div class="container">
-            <h1 class="display-6">Featured sample pack title</h1>
-            <p class="lead">Featured sample pack description...</p>
-            <a href="{# url 'detail' #}" class="btn btn-primary">Detail view</a>
-            ^^^ Replace the above with normal DTL tags ^^^
-        </div>-->
+<div class="jumbotron">
   <div class="container">
     <h1 class="display-2">Welcome to smpl.pk!</h1>
     <p class="lead">Check out all the sample packs below.</p>
   </div>
 </div>
 <div class="row">
-    <!-- TODO: put in card group (https://getbootstrap.com/docs/4.0/components/card/#card-layout) -->
+  <div class="card-columns">
   {% for pack in packs %}
-  <div class="card" style="width: 18rem;">
-    <div class="card-body">
-      <h4 class="card-title">{{ pack.name }}</h4>
-      <p class="card-text">{{ pack.description }}</p>
-      <a href="{% url 'detail' pack.id %}" class="btn btn-primary">Preview</a>
-    </div>
-  </div>
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">{{ pack.name }}</h4>
+          <p class="card-text">{{ pack.description }}</p>
+          <a href="{% url 'detail' pack.id %}" class="btn btn-primary">Preview</a>
+        </div>
+      </div>
   {% endfor %}
+  </div>
 </div>
 {% endblock %}
