@@ -39,17 +39,6 @@ web:
         - ../front-layer:/app
     command: "mod_wsgi-express start-server --reload-on-changes front-layer/wsgi.py"
 
-proxy:
-    image: haproxy:1.5
-    container_name: proxy 
-    depends_on: web
-    ports:
-        - "80:80"
-    volumes:
-        - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-    extra_hosts:
-        docker:
-
 kafka:
    image: spotify/kafka
    container_name: kafka
