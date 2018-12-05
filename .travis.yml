@@ -10,7 +10,7 @@ install:
   - cat setup.sh | docker run --name mysql-cmdline --link mysql:db -i mysql:5.7.23 bash
   - sleep 10
   - docker-compose up -d
-  - sleep 100
+  - sleep 420
 script:
   - docker exec -it models bash -c "python manage.py test"
 
