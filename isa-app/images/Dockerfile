@@ -1,0 +1,3 @@
+FROM dockercloud/haproxy:latest
+
+
