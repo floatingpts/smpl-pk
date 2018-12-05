@@ -7,7 +7,7 @@ before_install:
   - docker pull mysql:5.7.23
 install:
   - docker run --name mysql -d -e MYSQL_ROOT_PASSWORD='$3cureUS' -v ~/cs4501/db:/var/lib/mysql mysql:5.7.23
-  - sudo docker run -it --name mysql-cmdline --link mysql:db -v ~/cs4501/cs4501-isa-app/setup.sql:/setup.sql mysql:5.7.23 bash -c "cat /setup.sql | mysql -uroot -p'$3cureUS' -h db"
+  - sudo docker run -it --name mysql-cmdline --link mysql:db -v ~/cs4501/cs4501-isa-app/:/cs4501/cs4501-isa-app/ mysql:5.7.23 bash -c "cd /cs4501/cs4501-isa-app/ && cat setup.sql | mysql -uroot -p'$3cureUS' -h db"
   - sleep 10
   - docker-compose up
   - sleep 10
