@@ -19,16 +19,16 @@
   <div class="card-body">
     <h4 class="card-title">Create account</h4>
     <hr>
-  	<form method="post" action="{% url 'create_account' %}">
-  	  {% csrf_token %}
+    <form id="createAccountForm" method="post" action="{% url 'create_account' %}">
+      {% csrf_token %}
       {% for field in form %}
       <div class="form-group">
         {{ field.label_tag }}
         {{ field }}
       </div>
       {% endfor %}
-  	  <input class="btn btn-primary" type="submit" value="Submit"/>
-  	</form>
+      <input class="btn btn-primary" type="submit" value="Submit"/>
+    </form>
   </div>
 </div>
 {% endblock %}
