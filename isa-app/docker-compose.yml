@@ -11,6 +11,7 @@ models:
         bash -c "pip install djangorestframework
         && pip install markdown
         && pip install django-filter
+        && python manage.py flush --noinput
         && python manage.py migrate
         && python manage.py loaddata db.json
         && mod_wsgi-express start-server --working-directory /app/ --reload-on-changes isa-app/wsgi.py"
@@ -28,16 +29,36 @@ exp:
         - ../experience-layer:/app
     command: "mod_wsgi-express start-server --reload-on-changes experience-layer/wsgi.py"
 
-web:
+web_1:
     image: tp33/django
-    container_name: web
+    container_name: web_1
     links:
         - exp:exp-api
     ports:
-        - "8000:8000"
+        - "8004:8000"
     volumes:
         - ../front-layer:/app
     command: "mod_wsgi-express start-server --reload-on-changes front-layer/wsgi.py"
+
+web_2:
+    image: tp33/django
+    container_name: web_2
+    links:
+        - exp:exp-api
+    volumes:
+        - ../front-layer:/app
+    command: "mod_wsgi-express start-server --reload-on-changes front-layer/wsgi.py"
+
+haproxy:
+    build: images/haproxy 
+    container_name: haproxy
+    links:
+        - web_1:web_1
+        - web_2:web_2
+    ports:
+        - "80:80"
+    volumes:
+        - ../isa-app:/app
 
 kafka:
    image: spotify/kafka
@@ -67,7 +88,7 @@ selenium-chrome:
   image: selenium/standalone-chrome
   container_name: selenium-chrome
   links:
-    - web:web
+    - web_1:web
   ports:
     - "4444:4444"
 
@@ -76,7 +97,7 @@ selenium-test:
   container_name: selenium-test
   links:
     - selenium-chrome:selenium-chrome
-    - web:web
+    - web_1:web
   volumes:
     - ../isa-app:/app
   command: bash -c "pip install selenium==3.14.0 && python testIntegration.py"
