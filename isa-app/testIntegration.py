@@ -43,19 +43,63 @@ class Integration(unittest.TestCase):
         # test call to create_account service with sample form data
 
         # locate username box
-        signup_form = driver.find_element_by_name('username')
-        signup_form.send_keys('tom')
+        username = driver.find_element_by_name('username')
+        username.send_keys('tom_1')
         # locate password box
-        signup_form = driver.find_element_by_name('password')
-        signup_form.send_keys('password')
+        password = driver.find_element_by_name('password')
+        password.send_keys('password_2')
         # locate email box
-        signup_form = driver.find_element_by_name('email')
-        signup_form.send_keys('tom@gmail.com')       
+        email = driver.find_element_by_name('email')
+        email.send_keys('tom3@gmail.com')       
         # submit the form
-        signup_form.submit()
+        submit_button = driver.find_element_by_id('submit_button')
+        submit_button.click()
 
         # check that we successfully returned to the homepage
         self.assertEqual('Homepage', driver.title)
+
+    def test_login_success(self):
+        driver = self.driver
+        # test login with correct info
+        # get homepage and assert success
+        driver.get('http://web:8000')
+        self.assertEqual('Homepage', driver.title)
+        # navigate to login page and assert success
+        driver.get('http://web:8000/login/')
+        self.assertEqual('Login', driver.title)
+
+        # locate username box
+        username_box = driver.find_element_by_name('username')
+        username_box.send_keys('tomsobolik')
+        # locate password box
+        password_box = driver.find_element_by_name('password')
+        password_box.send_keys('booty')      
+        # submit the form
+        button = driver.find_element_by_id('loginButton')
+        button.click()
+
+        # check that we successfully returned to the homepage
+        self.assertEqual('Homepage', driver.title)
+
+    def test_login_incorrectInput(self):
+        driver = self.driver
+        driver.get('http://web:8000/')
+        # navigate to login page and assert success
+        driver.get('http://web:8000/login/')
+        # test login with incorrect info
+
+        # locate username box
+        username = driver.find_element_by_name('username')
+        username.send_keys('faskdjfaskdjf')
+        # locate password box
+        password = driver.find_element_by_name('password')
+        password.send_keys('faiesudiewafig4')      
+        # submit the form
+        submit_button = driver.find_element_by_id('loginButton')
+        submit_button.click()
+
+        # check that login request was denied
+        self.assertEqual('Login', driver.title)
 
     def tearDown(self):
         self.driver.close()
