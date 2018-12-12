@@ -64,6 +64,30 @@ class Integration(unittest.TestCase):
         # get homepage and assert success
         driver.get('http://web:8000')
         self.assertEqual('Homepage', driver.title)
+
+        driver.get('http://web:8000/login/')
+        self.assertEqual('Login', driver.title)
+        # navigate to create account page and assert success
+        driver.get('http://web:8000/create_account/')
+        self.assertEqual('Sign up', driver.title)
+        
+        # create a sample account
+
+        # locate username box
+        username = driver.find_element_by_name('username')
+        username.send_keys('tomsobolik')
+        # locate password box
+        password = driver.find_element_by_name('password')
+        password.send_keys('booty')
+        # locate email box
+        email = driver.find_element_by_name('email')
+        email.send_keys('tomsobolikrocks@gmail.com')       
+        # submit the form
+        submit_button = driver.find_element_by_id('submit_button')
+        submit_button.click()
+
+        # log into the new acccount
+
         # navigate to login page and assert success
         driver.get('http://web:8000/login/')
         self.assertEqual('Login', driver.title)
@@ -78,8 +102,8 @@ class Integration(unittest.TestCase):
         button = driver.find_element_by_id('loginButton')
         button.click()
 
-        # check that we successfully returned to the homepage
-        self.assertEqual('Homepage', driver.title)
+        # check that we logged in by seeing if the login button changed
+        assert "Log out" in driver.page_source
 
     def test_login_incorrectInput(self):
         driver = self.driver
