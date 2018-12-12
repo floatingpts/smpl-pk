@@ -10,7 +10,8 @@ install:
   - docker run --name mysql -d -e MYSQL_ROOT_PASSWORD='$3cureUS' -v ~/cs4501/db:/var/lib/mysql mysql:5.7.23
   - sleep 60
   - cat ./setup.sh | docker exec -i mysql bash
-  - docker-compose up --build
+  - sleep 60
+  - docker-compose up -d --build
   - sleep 60
 script:
   - docker exec -it models bash -c "python manage.py test"
