@@ -101,11 +101,54 @@ class Integration(unittest.TestCase):
         # check that login request was denied
         self.assertEqual('Login', driver.title)
 
+    def test_create_listing(self):
+        driver = self.driver
+        driver.get('http://web:8000/')
+        driver.get('http://web:8000/login')
+        driver.get('http://web:8000/create_account')
+
+        # create an account
+        username = driver.find_element_by_name('username')
+        username.send_keys('tom')
+        # locate password box
+        password = driver.find_element_by_name('password')
+        password.send_keys('password')
+        # locate email box
+        email = driver.find_element_by_name('email')
+        email.send_keys('tom@gmail.com')       
+        # submit the form
+        submit_button = driver.find_element_by_id('submit_button')
+        submit_button.click()
+
+        # navigate to create listing page
+        driver.get('http://web:8000/create_listing')
+        # submit form data
+        name = driver.find_element_by_name('sample_name')
+        name.send_keys('newPack1')
+
+        description = driver.find_element_by_name('sample_description')
+        description.send_keys('sample pack description')
+
+        price = driver.find_element_by_name('price')
+        price.send_keys(1)
+
+        submit_button = driver.find_element_by_id('submitNewListing')
+        submit_button.click()
+
+        # search for the newly created pack and assert that it comes up
+        # Go to homepage
+        driver.get('http://web:8000')
+        # Submit search
+        search_form = driver.find_element_by_id('search_box')
+        search_form.clear()
+        search_form.send_keys('newPack1')
+        search_form.submit()
+        # Check that 'Piano sound effects' in results
+        assert "newPack1" in driver.page_source
+
     def tearDown(self):
         self.driver.close()
         
 if __name__ == "__main__":
     time.sleep(15)
     unittest.main()
-
-
