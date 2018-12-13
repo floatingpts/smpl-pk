@@ -159,16 +159,7 @@ class Integration(unittest.TestCase):
         submit_button = driver.find_element_by_id('submitNewListing')
         submit_button.click()
 
-        # search for the newly created pack and assert that it comes up
-        # Go to homepage
-        driver.get('http://web:8000')
-        # Submit search
-        search_form = driver.find_element_by_id('search_box')
-        search_form.clear()
-        search_form.send_keys('newPack1')
-        search_form.submit()
-        # Check that 'Piano sound effects' in results
-        assert "newPack1" in driver.page_source
+        assert "Your pack was successfully added!" in driver.page_source
 
     def tearDown(self):
         self.driver.close()
