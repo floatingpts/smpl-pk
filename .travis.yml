@@ -19,6 +19,10 @@ install:
   - docker start mysql-cmdline
   - docker exec -i mysql-cmdline bash -c "mysql -uroot -p'\$3cureUS' -h db" <<< "grant all on cs4501.* to 'www'@'%';"
   - sleep 10
+  - docker start mysql-cmdline
+  - sleep 10
+  - docker exec -i mysql-cmdline bash -c "mysql -uroot -p'\$3cureUS' -h db" <<< "grant all on test_cs4501.* to 'www'@'%';"
+  - sleep 10
   - docker-compose up -d --build
   - sleep 10
   - docker-compose logs models
