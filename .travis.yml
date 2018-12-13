@@ -12,6 +12,13 @@ install:
   - docker ps -a
   - docker run -i --name mysql-cmdline --link mysql:db mysql:5.7.23 bash -c "mysql -uroot -p'\$3cureUS' -h db" <<< "create user 'www'@'%' identified by '\$3cureUS';" # create database cs4501 character set utf8; grant all on cs4501.* to 'www'@'%'; grant all on test_cs4501.* to 'www'@'%'"
   - sleep 10
+  - docker start mysql-cmdline
+  - sleep 10
+  - docker exec -i mysql-cmdline bash -c "mysql -uroot -p'\$3cureUS' -h db" <<< "create database cs4501 character set utf 8;"
+  - sleep 10
+  - docker start mysql-cmdline
+  - docker exec -i mysql-cmdline bash -c "mysql -uroot -p'\$3cureUS' -h db" <<< "grant all on cs4501.* to 'www'@'%';"
+  - sleep 10
   - docker-compose up -d --build
   - sleep 10
 script:
