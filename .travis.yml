@@ -3,11 +3,13 @@ services:
   - docker
   - mysql
 before_install:
+  - mkdir ~/db
   - cd isa-app
   - docker pull mysql:5.7.23
 install:
-  - docker run --name mysql -d -e MYSQL_ROOT_PASSWORD='$3cureUS' -v ~/cs4501/db:/var/lib/mysql mysql:5.7.23
+  - docker run --name mysql -d -e MYSQL_ROOT_PASSWORD='$3cureUS' -v ~/db:/var/lib/mysql mysql:5.7.23
   - sleep 10
+  - docker ps -a
   - docker run -i --name mysql-cmdline --link mysql:db mysql:5.7.23 bash -c "mysql -uroot -p'\$3cureUS' -h db" <<< "create user 'www'@'%' identified by '\$3cureUS';" # create database cs4501 character set utf8; grant all on cs4501.* to 'www'@'%'; grant all on test_cs4501.* to 'www'@'%'"
   - sleep 10
   - docker-compose up -d --build
