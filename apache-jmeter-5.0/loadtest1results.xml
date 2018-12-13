@@ -1,0 +1,21 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1544732742078,42,Home,200,OK,Thread Group 1-1,text,true,,4566,113,1,1,http://localhost/,42,0,1
+1544732742583,88,Home,200,OK,Thread Group 1-2,text,true,,4566,113,2,2,http://localhost/,88,0,0
+1544732742423,609,Search,200,OK,Thread Group 1-1,text,true,,3388,145,3,3,http://localhost/search_results/?query_text=brass,609,0,0
+1544732742971,98,Search,200,OK,Thread Group 1-2,text,true,,3388,145,2,2,http://localhost/search_results/?query_text=brass,98,0,0
+1544732743081,48,Home,200,OK,Thread Group 1-3,text,true,,4566,113,1,1,http://localhost/,48,0,0
+1544732743431,57,Search,200,OK,Thread Group 1-3,text,true,,3388,145,2,2,http://localhost/search_results/?query_text=brass,57,0,0
+1544732743583,47,Home,200,OK,Thread Group 1-4,text,true,,4566,113,1,1,http://localhost/,47,0,1
+1544732743931,50,Search,200,OK,Thread Group 1-4,text,true,,3388,145,2,2,http://localhost/search_results/?query_text=brass,50,0,0
+1544732744085,45,Home,200,OK,Thread Group 1-5,text,true,,4566,113,1,1,http://localhost/,45,0,0
+1544732744433,46,Search,200,OK,Thread Group 1-5,text,true,,3388,145,2,2,http://localhost/search_results/?query_text=brass,46,0,0
+1544732744582,50,Home,200,OK,Thread Group 1-6,text,true,,4566,113,1,1,http://localhost/,50,0,2
+1544732744932,51,Search,200,OK,Thread Group 1-6,text,true,,3388,145,2,2,http://localhost/search_results/?query_text=brass,51,0,0
+1544732745087,40,Home,200,OK,Thread Group 1-7,text,true,,4566,113,1,1,http://localhost/,40,0,1
+1544732745430,43,Search,200,OK,Thread Group 1-7,text,true,,3388,145,2,2,http://localhost/search_results/?query_text=brass,43,0,0
+1544732745582,47,Home,200,OK,Thread Group 1-8,text,true,,4566,113,1,1,http://localhost/,47,0,2
+1544732745934,43,Search,200,OK,Thread Group 1-8,text,true,,3388,145,2,2,http://localhost/search_results/?query_text=brass,43,0,0
+1544732746085,45,Home,200,OK,Thread Group 1-9,text,true,,4566,113,1,1,http://localhost/,45,0,1
+1544732746431,42,Search,200,OK,Thread Group 1-9,text,true,,3388,145,2,2,http://localhost/search_results/?query_text=brass,42,0,0
+1544732746584,53,Home,200,OK,Thread Group 1-10,text,true,,4566,113,1,1,http://localhost/,53,0,1
+1544732746937,63,Search,200,OK,Thread Group 1-10,text,true,,3388,145,1,1,http://localhost/search_results/?query_text=brass,63,0,0
