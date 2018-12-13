@@ -3,8 +3,6 @@ from django.urls import reverse
 from . import models, urls
 import json
 import unittest
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 
 # ====================
 # Musician test cases.
@@ -689,4 +687,4 @@ class DeleteAuthenticatorTestCase(TestCase):
         get_response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":1}))
         self.assertEquals(get_response.status_code, 404)
 
-    
+
