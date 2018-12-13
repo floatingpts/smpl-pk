@@ -4,12 +4,13 @@ services:
   - mysql
 before_install:
   - cd isa-app
-  - docker-compose down
   - docker pull mysql:5.7.23
 install:
   - docker run --name mysql -d -e MYSQL_ROOT_PASSWORD='$3cureUS' -v ~/cs4501/db:/var/lib/mysql mysql:5.7.23
   - sleep 60
-  - cat ./setup.sh | docker exec -i mysql bash
+  - docker run --name mysql-cmdline -d --link mysql:db mysql:5.7.23
+  - sleep 20
+  - cat ./setup.sh | docker exec -i mysql-cmdline bash
   - sleep 60
   - docker-compose up -d --build
   - sleep 60
