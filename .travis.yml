@@ -21,5 +21,6 @@ install:
   - sleep 10
   - docker-compose up -d --build
   - sleep 10
+  - docker-compose logs models
 script:
   - docker exec -it models bash -c "python manage.py test"
