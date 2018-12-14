@@ -11,6 +11,7 @@ models:
         bash -c "pip install djangorestframework
         && pip install markdown
         && pip install django-filter
+        && python manage.py flush
         && python manage.py migrate
         && python manage.py loaddata db.json
         && mod_wsgi-express start-server --working-directory /app/ --reload-on-changes isa-app/wsgi.py"
