@@ -1,4 +1,5 @@
 # CS4501: Internet Scale Applications Project
+[![Build Status](https://travis-ci.com/daedrika/smpl-pk.svg?token=v5ucdx38yXNGyu51zSJH&branch=master)](https://travis-ci.com/daedrika/smpl-pk)
 ## Members
 - `Dylan Cooper // dtc4zv`
 - `Tom Sobolik // ts3bj`
