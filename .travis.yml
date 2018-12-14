@@ -25,8 +25,9 @@ install:
   - docker exec -i mysql-cmdline bash -c "mysql -uroot -p'\$3cureUS' -h db" <<< "grant all on test_cs4501.* to 'www'@'%';"
   - sleep 10
   - docker-compose up -d --build
-  - sleep 10
+  - sleep 60
   - docker-compose logs models
+  - docker-compose logs selenium-test
 script:
   - docker exec -it models bash -c "python manage.py test"
   - docker exec -it selenium-test bash -c "python integration.py"
