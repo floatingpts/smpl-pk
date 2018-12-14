@@ -6,6 +6,7 @@ before_install:
   - mkdir ~/db
   - cd isa-app
   - docker pull mysql:5.7.23
+  - pip install selenium==3.14.0
 install:
   - docker run -it --name mysql -d -e MYSQL\_ROOT\_PASSWORD='$3cureUS' -v ~/db:/var/lib/mysql mysql:5.7.23
   - sleep 20
@@ -28,3 +29,4 @@ install:
   - docker-compose logs models
 script:
   - docker exec -it models bash -c "python manage.py test"
+  - docker exec -it selenium-test bash -c "python integration.py"
