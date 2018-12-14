@@ -11,7 +11,7 @@ models:
         bash -c "pip install djangorestframework
         && pip install markdown
         && pip install django-filter
-        && python manage.py flush
+        && python manage.py flush --noinput
         && python manage.py migrate
         && python manage.py loaddata db.json
         && mod_wsgi-express start-server --working-directory /app/ --reload-on-changes isa-app/wsgi.py"
@@ -50,7 +50,7 @@ web_2:
     command: "mod_wsgi-express start-server --reload-on-changes front-layer/wsgi.py"
 
 haproxy:
-    build: images/haproxy 
+    build: images/haproxy
     container_name: haproxy
     links:
         - web_1:web_1
@@ -67,7 +67,7 @@ kafka:
       ADVERTISED_HOST: kafka
       ADVERTISED_PORT: 9092
    hostname: kafka
-   
+
 es:
    image: elasticsearch:2.0
    container_name: es
@@ -83,7 +83,7 @@ batch:
    volumes:
       - ../isa-app:/app
    command: python3 batchScript.py
-   
+
 selenium-chrome:
   image: selenium/standalone-chrome
   container_name: selenium-chrome
@@ -101,4 +101,3 @@ selenium-test:
   volumes:
     - ../isa-app:/app
   command: bash -c "pip install selenium==3.14.0 && python integration.py"
-   
