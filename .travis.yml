@@ -30,4 +30,5 @@ install:
   - docker-compose logs selenium-test
 script:
   - docker exec -it models bash -c "python manage.py test"
+  - docker start selenium-test
   - docker exec -it selenium-test bash -c "python integration.py"
