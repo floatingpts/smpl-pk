@@ -99,7 +99,7 @@ selenium-test:
     - web_1:web
   volumes:
     - ../isa-app:/app
-  command: bash -c "pip install selenium==3.14.0 && python testIntegration.py"
+  command: bash -c "pip install selenium==3.14.0 && python integration.py"
 
 spark-master:
   image: gettyimages/spark
