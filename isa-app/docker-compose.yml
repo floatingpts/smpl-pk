@@ -150,3 +150,12 @@ spark-worker:
     - 8081:8081
   volumes:
     - ./data:/tmp/data
+
+spark-batch:
+  image: tp33/django
+  container_name: spark-batch
+  links:
+     - kafka:kafka
+  volumes:
+     - ../isa-app:/app
+  command: python3 spark-batch.py
