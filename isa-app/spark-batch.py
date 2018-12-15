@@ -13,8 +13,13 @@ while True:
         continue
 
 # Pull messages from Kafka in real time.
-consumer = KafkaConsumer('sample-pack-listings', group_id='listing-indexer', bootstrap_servers=['kafka:9092'], api_version=('0.9'))
+consumer = KafkaConsumer('recommendations-log', group_id='recommendations-indexer', bootstrap_servers=['kafka:9092'], api_version=('0.9'))
+f = open('data/access.log', 'a')
 for message in consumer:
     # Read the message.
-    listing = json.loads((message.value).decode('utf-8'))
-    print('New listing %s added!' % listing['name'])
+    record = json.loads((message.value).decode('utf-8'))
+    # Append tab separated values to log.
+    user_id = str(record['user_id'])
+    listing_id = str(record['listing_id'])
+    f.write(user_id + '\t' + listing_id + '\n')
+    f.flush()

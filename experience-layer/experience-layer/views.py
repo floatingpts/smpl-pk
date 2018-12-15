@@ -10,6 +10,12 @@ import urllib.error
 import json
 
 def samplePack_details(request, pk):
+  # Get user/listing data from front end.
+  recommendations_data = {
+    'user_id': request.GET.get('user_id'),
+    'listing_id': pk
+  }
+
   # Get specified sample pack.
   request_samples = urllib.request.Request('http://models-api:8000/api/samples_in_pack/' + str(pk) + '/')
   request_pack = urllib.request.Request('http://models-api:8000/api/sample_packs/' + str(pk) + '/')
@@ -25,6 +31,10 @@ def samplePack_details(request, pk):
     "pack": pack,
     "samples": samples,
   }
+
+  # Insert the listing into the Kafka queue.
+  producer = KafkaProducer(bootstrap_servers='kafka:9092')
+  producer.send('recommendations-log', json.dumps(recommendations_data).encode('utf-8'))
 
   return JsonResponse(data)
 
@@ -139,7 +149,7 @@ def create_account(request):
 @csrf_exempt
 def create_listing(request):
   # Pass data along to model API to create a new entry.
-  data=request.body
+  data = request.body
   response_request = urllib.request.Request('http://models-api:8000/api/create_listing/', data, method='POST')
   try:
     # Pass the listing.
@@ -159,9 +169,7 @@ def create_listing(request):
         }
         return JsonResponse(data)
 
-
   # Return a JsonResponse to the front-end specifying whether creation was successful and user was logged-in.
-
   decoded_response = response.read().decode('utf-8')
   pack_data = json.loads(decoded_response)
 

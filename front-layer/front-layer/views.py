@@ -44,7 +44,12 @@ def pack_detail(request, pk):
     # Check if user logged in (for login/logout link)
     logged_in = is_user_logged_in(request)
     template = loader.get_template('front-layer/pack_detail.html')
-    request_pack = urllib.request.Request('http://exp-api:8000/pack_detail/' + str(pk) + '/')
+    # Send the user_id to the experience layer for logging.
+    if logged_in:
+        user_id = request.COOKIES.get('user_id')
+        request_pack = urllib.request.Request('http://exp-api:8000/pack_detail/' + str(pk) + '/?user_id=' + user_id)
+    else:
+        request_pack = urllib.request.Request('http://exp-api:8000/pack_detail/' + str(pk) + '/')
     json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
     pack = json.loads(json_pack)
     context = pack
@@ -134,8 +139,10 @@ def login(request):
 
     # Can now log user in, set login cookie
     authenticator = response["response"]["authenticator"]
+    user_id = response["response"]["user_id"]
     response = HttpResponseRedirect(next_page)
     response.set_cookie("authenticator", authenticator)
+    response.set_cookie("user_id", user_id)
 
     return response
 
