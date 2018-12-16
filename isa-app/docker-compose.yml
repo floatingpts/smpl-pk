@@ -158,4 +158,4 @@ spark-batch:
      - kafka:kafka
   volumes:
      - ../isa-app:/app
-  command: bash -c "rm ./data/access.log && python3 spark-batch.py"
+  command: bash -c "python3 spark-batch.py"
