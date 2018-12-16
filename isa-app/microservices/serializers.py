@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Musician, Sample, SamplePack, Authenticator
+from .models import Musician, Sample, SamplePack, Authenticator, Recommendation
 
 class MusicianSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -22,3 +22,8 @@ class AuthenticatorSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Authenticator
 		fields = ('id', 'authenticator', 'user_id', 'date_created')
+
+class RecommendationSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Recommendation
+		fields = ('item_id', 'recommended')

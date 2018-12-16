@@ -329,3 +329,37 @@ def authenticator_detail(request, pk):
     elif request.method == 'DELETE':
         authenticator.delete()
         return HttpResponse(status=204)
+
+@csrf_exempt
+def recommendation_list(request):
+    if request.method == 'GET':
+        recommendations = Recommendation.objects.all()
+        serializer = AuthenticatorSerializer(recommendations, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = RecommendationSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def recommendation_detail(request, pk):
+    """
+    CRUD methods for Recommendation model
+    """
+    try:
+        recommendation = Recommendation.objects.get(pk=pk)
+    except Recommendation.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = RecommendationSerializer(recommendation)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'DELETE':
+        recommendation.delete()
+        return HttpResponse(status=204)
+
