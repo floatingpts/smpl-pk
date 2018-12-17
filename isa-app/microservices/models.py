@@ -47,7 +47,7 @@ class Sample(models.Model):
 
 class Recommendation(models.Model):
     item_id = models.CharField(max_length=50)
-    recommended = models.ManyToManyField(SamplePack, blank=True, related_name='recommended_items')
+    recommended = models.ManyToManyField("self")
 
     def __str__(self):
         return self.name
