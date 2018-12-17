@@ -1,4 +1,4 @@
-# Pulls messages from Kafka and indexes that in ES.
+# Pulls messages from Kafka and logs it for Spark to access.
 from kafka import KafkaConsumer, KafkaProducer
 from kafka.common import NodeNotReadyError
 import json, time

@@ -8,65 +8,57 @@ data = sc.textFile("/tmp/data/access.log", 2)
 # Tell each worker to split each line of it's partition
 pairs = data.map(lambda line: line.split("\t"))
 pairs.persist()
+
+# TODO: Use this so that Top 5 popular packs are displayed on home page
+# Bring the data back to the master node so we can print it out
 # Re-layout the data to ignore the user id
-pages = pairs.map(lambda pair: (pair[1], 1))
+# pages = pairs.map(lambda pair: (pair[1], 1))
 # Shuffle the data so that each key is only on one worker
 # and then reduce all the values by adding them together
-count = pages.reduceByKey(lambda x,y: int(x)+int(y))
-
-# Bring the data back to the master node so we can print it out
-# TODO: Use this so that Top 5 popular packs are displayed on home page
-#output = count.collect()
-#for page_id, count in output:
-#    print ("page_id %s count %d" % (page_id, count))
-#print ("Popular items done")
+# count = pages.reduceByKey(lambda x,y: int(x)+int(y))
+# output = count.collect()
+# for page_id, count in output:
+#     print ("page_id %s count %d" % (page_id, count))
+# print ("Popular items done")
 
 # Group data into (user_id, list of item ids they clicked on)
-coclicks = pairs.groupByKey()
-item_lists = coclicks.map(lambda pair: pair[1])
-# Get all possible pairings of items
-permutations = item_lists.cartesian(item_lists)
+coclick_lists = pairs.groupByKey()
+coclick_lists.persist()
 
-output = coclicks.collect()
+output = coclick_lists.collect()
 for list in output:
-    print("List for user %s below: " % list[0])
+    print("(user_id = %s, clicks = { " % list[0], end='')
     for item in list[1]:
-        print("item %s" % item)
-"""
+        print("%s, " % item, end='')
+    print("})")
 
-# Remove duplicates and pairs of same item
-permutations.filter(lambda tuple: tuple[0] < tuple[1])
-# Transform into (user_id, (item1, item2))
-coclick_pairs = coclicks.map(lambda group: (group[0], (group[1] > group[1])))
+# Get the individual values for pageclicks (user_id, item)
+coclick_values = coclick_lists.flatMapValues(lambda x: x)
+# Join to get all pairs of values with matching keys (user_id, (item, item))
+coclick_pairs = coclick_values.join(coclick_values)
+# Remove identical pairs (item1, item1) and duplicates (item1, item2) == (item2, item1)
+coclick_pairs = coclick_pairs.filter(lambda x: x[1][0] < x[1][1])
+coclick_pairs.persist()
 
-# Collect and print the output
 output = coclick_pairs.collect()
-for user, pair in output:
-    print("user %s item1 %s item2 %s" % (user, pair[0], pair[1]))
+for tuple in output:
+    print("(userid = %s, clicks = ( " % tuple[0], end='')
+    for item in tuple[1]:
+        print("%s, " % item, end='')
+    print("))")
 
-# Transform into ((item1, item2), list of user1, user2 etc) where users are all the ones who co-clicked (item1, item2)
-coclick_pair_to_user = coclick_pairs.groupByKey()
+# Swap coclicks to keys ((item1, item2), 1)
+coclick_key_pairs = coclick_pairs.map(lambda pair: (pair[1], 1))
+# Reduce by key to get ((item1, item2), count of user_ids)
+coclick_user_counts = coclick_key_pairs.reduceByKey(lambda l, r: int(l)+int(r))
+# Filter out results with less than 3 users ((item1, item2), count_user_ids >= 3)
+coclick_critical_counts = coclick_user_counts.filter(lambda pair: pair[1] >= 3)
 
-# Collect and print the output
-output = coclick_pair_to_user.collect()
-for pages, count in output:
-    print("page %s page %s count %d" % (pages[0], pages[1], count))
+output = coclick_critical_counts.collect()
+for tuple in output:
+    print("(clicks = (", end='')
+    for item in tuple[0]:
+        print("%s, " % item, end='')
+    print("), count = %s)" % tuple[1])
 
-# Transform into ((item1, item2), count of distinct users who co-clicked (item1, item2)
-coclick_pair_counts = coclick_pair_to_user.map(lambda coclickCount: (coclickCount[0], len(coclickCount[1])))
-
-# Collect and print the output
-output = coclick_pair_counts.collect()
-for pages, count in output:
-    print("page %s page %s count %d" % (pages[0], pages[1], count))
-
-# Filter out any results where less than 3 users co-clicked the same pair of items
-coclick_counts_filtered = coclick_pair_to_user.filter(lambda x: x[1] > 3)
-
-# Collect and print the output so we can have a look see
-output = coclick_counts_filtered.collect()
-for pages, count in output:
-    print("page %s page %s count %d" % (pages[0], pages[1], count))
-print("Recommendations done")
-"""
 sc.stop()
