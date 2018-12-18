@@ -334,7 +334,7 @@ def authenticator_detail(request, pk):
 def recommendation_list(request):
     if request.method == 'GET':
         recommendations = Recommendation.objects.all()
-        serializer = AuthenticatorSerializer(recommendations, many=True)
+        serializer = RecommendationSerializer(recommendations, many=True)
         return JsonResponse(serializer.data, safe=False)
 
     if request.method == 'POST':
@@ -362,4 +362,3 @@ def recommendation_detail(request, pk):
     elif request.method == 'DELETE':
         recommendation.delete()
         return HttpResponse(status=204)
-

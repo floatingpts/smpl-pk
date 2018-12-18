@@ -1,4 +1,8 @@
 from pyspark import SparkContext
+import urllib.request
+import urllib.parse
+import urllib.error
+import json
 
 sc = SparkContext("spark://spark-master:7077", "RecommendedPacks")
 
@@ -54,11 +58,48 @@ coclick_user_counts = coclick_key_pairs.reduceByKey(lambda l, r: int(l)+int(r))
 # Filter out results with less than 3 users ((item1, item2), count_user_ids >= 3)
 coclick_critical_counts = coclick_user_counts.filter(lambda pair: pair[1] >= 3)
 
-output = coclick_critical_counts.collect()
-for tuple in output:
-    print("(clicks = (", end='')
-    for item in tuple[0]:
-        print("%s, " % item, end='')
-    print("), count = %s)" % tuple[1])
+# Remove count of user_ids (item1, item2)
+# TODO: Sort by count, so we need to keep this field?
+coclick_keys = coclick_critical_counts.map(lambda x: x[0])
+# Get the list of recommended items for each ID (item1, list_of_recommended)
+recommendations = coclick_keys.groupByKey().collect()
+
+for r in recommendations:
+    item_id = r[0]
+    recommended_list = r[1]
+
+    # Build recommendation to send to server.
+    data = {
+        'item_id': item_id,
+        'recommended': [],
+    }
+
+    # Iterate over the recommended items with generated results.
+    for item in recommended_list:
+        data['recommended'].append(item)
+
+    # Get current recommendation list for item.
+    try:
+        get_request = urllib.request.Request('http://models-api:8000/api/recommendations/%s/' % item_id)
+        response = urllib.request.urlopen(get_request).read().decode("utf-8")
+        current_recommendation = json.loads(response)
+        for item in current_recommendation['recommended']:
+            data['recommended'].append(item)
+
+        # Remove the outdated version.
+        delete_request = urllib.request.Request('http://models-api:8000/api/recommendations/%s/' % item_id, method='DELETE')
+        urllib.request.urlopen(delete_request)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            # This is an expected case (no current recommendation list for item).
+            pass
+
+    # Feed into database as JSON.
+    json_data = json.dumps(data).encode('utf-8')
+    post_request = urllib.request.Request(
+        url='http://models-api:8000/api/recommendations/',
+        data=json_data,
+        headers={'content-type': 'application/json'})
+    urllib.request.urlopen(post_request)
 
 sc.stop()

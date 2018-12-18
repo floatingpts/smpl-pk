@@ -46,8 +46,8 @@ class Sample(models.Model):
         return self.name
 
 class Recommendation(models.Model):
-    item_id = models.CharField(max_length=50)
-    recommended = models.ManyToManyField("self")
+    item_id = models.OneToOneField(SamplePack, on_delete=models.CASCADE, primary_key=True)
+    recommended = models.ManyToManyField(SamplePack, blank=True, related_name='recommended_items')
 
     def __str__(self):
-        return self.name
+        return self.item_id

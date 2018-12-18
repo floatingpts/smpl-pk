@@ -12,8 +12,8 @@ urlpatterns = [
     path('samples/<int:pk>/', views.sample_detail, name="samples-detail"),
     path('authenticators/', views.authenticator_list, name="authenticator-list"),
     path('authenticator/<int:pk>/', views.authenticator_detail, name="authenticator-detail"),
-    path('recommendations/', views.recommendation_list, name="recommendation_list"),
-    path('recommendations/<int:pk>/', views.recommendation_detail, name="recommendation_detail"),
+    path('recommendations/', views.recommendation_list, name="recommendation-list"),
+    path('recommendations/<int:pk>/', views.recommendation_detail, name="recommendation-detail"),
     # Front-end functionality
     path('samples_in_pack/<int:pk>/', views.samples_in_pack),
     path('top5_sample_packs/', views.top5_sample_packs),

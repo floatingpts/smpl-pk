@@ -10,12 +10,6 @@ import urllib.error
 import json
 
 def samplePack_details(request, pk):
-  # Get user/listing data from front end.
-  recommendations_data = {
-    'user_id': request.GET.get('user_id'),
-    'listing_id': pk
-  }
-
   # Get specified sample pack.
   request_samples = urllib.request.Request('http://models-api:8000/api/samples_in_pack/' + str(pk) + '/')
   request_pack = urllib.request.Request('http://models-api:8000/api/sample_packs/' + str(pk) + '/')
@@ -30,6 +24,12 @@ def samplePack_details(request, pk):
   data = {
     "pack": pack,
     "samples": samples,
+  }
+
+  # Get user/listing data from front end.
+  recommendations_data = {
+    'user_id': request.GET.get('user_id'),
+    'listing_id': pk
   }
 
   # Insert the listing into the Kafka queue.

@@ -24,6 +24,7 @@ class AuthenticatorSerializer(serializers.ModelSerializer):
 		fields = ('id', 'authenticator', 'user_id', 'date_created')
 
 class RecommendationSerializer(serializers.ModelSerializer):
+	recommended = serializers.PrimaryKeyRelatedField(many=True, queryset=SamplePack.objects.all())
 	class Meta:
 		model = Recommendation
 		fields = ('item_id', 'recommended')
