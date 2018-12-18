@@ -20,10 +20,16 @@ def samplePack_details(request, pk):
   pack = json.loads(json_pack)
   samples = json.loads(json_samples)
 
+  # Get its recommendations
+  request_recommendations = urllib.request.Request('http://models-api:8000/api/recommendations' + str(pk) + '/')
+  json_recommendations = urllib.request.urlopen(request_recommendations).read().decode('utf-8')
+  recommendations = json.loads(json_recommendations)
+
   # Put it back into a response.
   data = {
     "pack": pack,
     "samples": samples,
+    "recommendations": recommendations
   }
 
   # Get user/listing data from front end.

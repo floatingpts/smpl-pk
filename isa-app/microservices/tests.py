@@ -687,4 +687,130 @@ class DeleteAuthenticatorTestCase(TestCase):
         get_response = self.client.get(reverse('microservices:authenticator-detail', kwargs={"pk":1}))
         self.assertEquals(get_response.status_code, 404)
 
+# ==================
+# Recommendation test cases.
+# ==================
+# CREATE/POST functionality.
+class CreateRecommendationTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_create_valid_recommendation(self):
+        # Add a new recommendation.
+        recommendation = {
+            "item_id": 4,
+            "recommended": [1, 4],
+        }
+        self.client.post(
+                path=reverse('microservices:recommendation-list'),
+                data=recommendation,
+                content_type="application/json")
+
+        # Get the newly-created recommendation.
+        response = self.client.get(reverse('microservices:recommendation-detail', kwargs={"pk":4}))
+
+        # Check that the response HTTP status is 200 OK.
+        self.assertEquals(response.status_code, 200)
+
+        # Check that the POSTed recommendation is the same as before and is assigned an ID.
+        actual = json.loads(response.content.decode("utf-8"))
+        expected = recommendation
+        expected["item_id"] = 4
+        self.assertEquals(actual, expected)
+
+    def test_create_invalid_recommendation(self):
+        # Try to add a new invalid recommendation.
+        recommendation = {
+            "non_existing_field": "foo",
+        }
+        self.client.post(
+                path=reverse('microservices:recommendation-list'),
+                data=recommendation,
+                content_type="application/json")
+
+        # Get the newly-created recommendation.
+        response = self.client.get(reverse('microservices:recommendation-detail', kwargs={"pk":5}))
+
+        # Check that the recommendation was not added.
+        self.assertEquals(response.status_code, 404)
+
+# RETRIEVE/GET functionality.
+class RetrieverecommendationDetailsTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_get_existing_recommendation(self):
+        # Assumes recommendation with ID 1 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:recommendation-detail', kwargs={"pk":1}))
+
+        # Checks that the HTTP status code is 200.
+        self.assertEquals(response.status_code, 200)
+
+        # Get recommendation from JSON response.
+        # Django returns a byte string for the response content, which
+        # needs to be decoded. See https://stackoverflow.com/questions/606191/.
+        recommendation_json = response.content.decode("utf-8")
+        recommendation = json.loads(recommendation_json)
+        self.assertEquals(recommendation["item_id"], 1)
+
+    # Non-existing recommendation ID given in url, so error.
+    def test_get_non_existing_recommendation(self):
+        # Try to get a recommendation with an unused ID.
+        response = self.client.get(reverse('microservices:recommendation-detail', kwargs={"pk":25}))
+
+        # Check that no such recommendation exists.
+        self.assertEquals(response.status_code, 404)
+
+    def test_get_recommendation_invalid_id(self):
+        # Try to get a recommendation with an invalid ID (a string).
+        # Reverse can't be used because the resolver will try to match the url
+        # to the urlpattern, which validates whether the argument's type (in
+        # this case, the string doesn't match the <int:pk> parameter).
+        response = self.client.get('/api/recommendations/foo/')
+
+        # Check that no such recommendation exists.
+        self.assertEquals(response.status_code, 404)
+
+class RetrieveRecommendationListTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_get_recommendation_list(self):
+        # Assumes recommendation with ID 1 is stored in db from fixture.
+        response = self.client.get(reverse('microservices:recommendation-list'))
+
+        # Checks that the HTTP status code is 200 OK.
+        self.assertEqual(response.status_code, 200)
+
+        # Get first element in response.
+        recommendation_list_json = response.content.decode("utf-8")
+        recommendation_list = json.loads(recommendation_list_json)
+        recommendation = recommendation_list[0]
+
+        # Check that recommendation in list, with first recommendation having an ID of 1.
+        self.assertEquals(len(recommendation_list), 3)
+        self.assertEquals(recommendation["item_id"], 1)
+
+# DELETE/DEL functionality.
+class DeleteRecommendationTestCase(TestCase):
+    # Test fixtures loaded here.
+    fixtures = ['test_fixture.json']
+
+    def test_delete_recommendation(self):
+        # Verify recommendation with ID of 1 exists before continuing.
+        verify_exists_response = self.client.get(reverse('microservices:recommendation-detail', kwargs={"pk":1}))
+        self.assertEquals(verify_exists_response.status_code, 200)
+
+        # Delete recommendation with ID of 1.
+        # This returns a 204 No Content response, but there isn't really
+        # a consistent standard among RESTful APIs in regards for what to return
+        # so there's no need to validate this behavior.
+        self.client.delete(reverse('microservices:recommendation-detail', kwargs={"pk":1}))
+
+        # Check that the recommendation no longer exists.
+        get_response = self.client.get(reverse('microservices:recommendation-detail', kwargs={"pk":1}))
+        self.assertEquals(get_response.status_code, 404)
+
+
+
 

@@ -174,5 +174,29 @@
     "authenticator": "123456789qwertyuiop",
     "date_created": "1998-05-28"
   }
+},
+{
+  "model": "microservices.recommendation",
+  "pk": 1,
+  "fields": {
+    "item_id": 1,
+    "recommended": [2, 4, 5]
+  }
+},
+{
+  "model": "microservices.recommendation",
+  "pk": 2,
+  "fields": {
+    "item_id": 2,
+    "recommended": [4, 5]
+  }
+},
+{
+  "model": "microservices.recommendation",
+  "pk": 3,
+  "fields": {
+    "item_id": 3,
+    "recommended": [5]
+  }
 }
 ]
