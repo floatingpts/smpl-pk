@@ -1,0 +1,50 @@
+<head>
+    <title>Sample-Pack Detail</title>
+</head>
+
+{% extends 'front-layer/base.html' %}
+{% block content %}
+  <h2>{{ pack.name }}</h2>
+  <div class="card">
+    <div class="card-body">{{ pack.description }}</div>
+  </div>
+  <div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Duration</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sample in samples %}
+        <tr>
+          <td><i class="fas fa-play"></i></td>
+          <th scope="row">{{ sample.id|add:"1" }}</th>
+          <td>{{ sample.name }}</td>
+          <td>{{ sample.minute_length }}m{{ sample.second_length }}s</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="row">
+      {% for pack in results %}
+      <div class="col-md-4">
+        <div class="card mb-2">
+          <div class="card-body">
+            <div class="media">
+              <div class="media-body">
+                <h4 class="card-title"><a href="{% url 'detail' pack.id %}">{{ pack.name }}</a></h4>
+                <h6 class="card-subtitle mb-2 text-muted">{{ pack.description }}</h6>
+              </div>
+              <a href="{% url 'detail' pack.id %}" class="btn-sm btn-success ml-3">{{ pack.price }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

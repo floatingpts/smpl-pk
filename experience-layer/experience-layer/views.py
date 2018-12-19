@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import Http404
 from django.views.decorators.csrf import csrf_exempt
 import django.contrib.auth.hashers
 from django.http import JsonResponse
@@ -13,24 +14,9 @@ def samplePack_details(request, pk):
   # Get specified sample pack.
   request_samples = urllib.request.Request('http://models-api:8000/api/samples_in_pack/' + str(pk) + '/')
   request_pack = urllib.request.Request('http://models-api:8000/api/sample_packs/' + str(pk) + '/')
+  request_recommendations = urllib.request.Request('http://models-api:8000/api/recommendations/' + str(pk) + '/')
   json_samples = urllib.request.urlopen(request_samples).read().decode('utf-8')
-  json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
-
-  # Decode individual JSON responses from strings.
-  pack = json.loads(json_pack)
-  samples = json.loads(json_samples)
-
-  # Get its recommendations
-  request_recommendations = urllib.request.Request('http://models-api:8000/api/recommendations' + str(pk) + '/')
-  json_recommendations = urllib.request.urlopen(request_recommendations).read().decode('utf-8')
-  recommendations = json.loads(json_recommendations)
-
-  # Put it back into a response.
-  data = {
-    "pack": pack,
-    "samples": samples,
-    "recommendations": recommendations
-  }
+  json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')  
 
   # Get user/listing data from front end.
   recommendations_data = {
@@ -40,10 +26,28 @@ def samplePack_details(request, pk):
 
   # Insert the listing into the Kafka queue.
   producer = KafkaProducer(bootstrap_servers='kafka:9092')
-  producer.send('recommendations-log', json.dumps(recommendations_data).encode('utf-8'))
+  producer.send('recommendations-log', json.dumps(recommendations_data).encode('utf-8'))  
 
+  # Decode individual JSON responses from strings.
+  pack = json.loads(json_pack)
+  samples = json.loads(json_samples)
+
+  # Put it back into a response.
+  data = {
+    "pack": pack,
+    "samples": samples,
+  }
+
+  try:
+    json_recommendations = urllib.request.urlopen(request_recommendations).read().decode('utf-8')
+    recommendations = json.loads(json_recommendations)
+    data["recommendations"] = recommendations
+  except urllib.error.HTTPError as e:
+    if e.code == 404:
+      # catch error when reco not found, return pack object without reco data
+      return JsonResponse(data)
+  
   return JsonResponse(data)
-
 
 def home(request):
   top_packs = urllib.request.Request('http://models-api:8000/api/top5_sample_packs/')

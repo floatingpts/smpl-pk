@@ -810,7 +810,4 @@ class DeleteRecommendationTestCase(TestCase):
         # Check that the recommendation no longer exists.
         get_response = self.client.get(reverse('microservices:recommendation-detail', kwargs={"pk":1}))
         self.assertEquals(get_response.status_code, 404)
-
-
-
-
+        
