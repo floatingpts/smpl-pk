@@ -29,22 +29,5 @@
         {% endfor %}
       </tbody>
     </table>
-    <div class="row">
-      {% for pack in recommendations %}
-      <div class="col-md-4">
-        <div class="card mb-2">
-          <div class="card-body">
-            <div class="media">
-              <div class="media-body">
-                <h4 class="card-title"><a href="{% url 'detail' pack.id %}">{{ pack.name }}</a></h4>
-                <h6 class="card-subtitle mb-2 text-muted">{{ pack.description }}</h6>
-              </div>
-              <a href="{% url 'detail' pack.id %}" class="btn-sm btn-success ml-3">{{ pack.price }}</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
   </div>
 {% endblock %}

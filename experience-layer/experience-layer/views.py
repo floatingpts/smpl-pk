@@ -18,15 +18,14 @@ def samplePack_details(request, pk):
   json_samples = urllib.request.urlopen(request_samples).read().decode('utf-8')
   json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')  
 
-  # Get user/listing data from front end.
-  recommendations_data = {
-    'user_id': request.GET.get('user_id'),
-    'listing_id': pk
-  }
-
-  # Insert the listing into the Kafka queue.
-  producer = KafkaProducer(bootstrap_servers='kafka:9092')
-  producer.send('recommendations-log', json.dumps(recommendations_data).encode('utf-8'))  
+  # if user logged in, insert the listing into the Kafka queue.
+  if request.GET.get('user_id') != None:
+    recommendations_data = {
+      'user_id': str(request.GET.get('user_id')),
+      'listing_id': pk
+    }  
+    producer = KafkaProducer(bootstrap_servers='kafka:9092')
+    producer.send('recommendations-log', json.dumps(recommendations_data).encode('utf-8'))
 
   # Decode individual JSON responses from strings.
   pack = json.loads(json_pack)

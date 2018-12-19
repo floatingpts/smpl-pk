@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.template import loader
@@ -53,9 +53,23 @@ def pack_detail(request, pk):
     json_pack = urllib.request.urlopen(request_pack).read().decode('utf-8')
     pack = json.loads(json_pack)
     context = pack
+
+    reco_ids = context['recommendations']['recommended']
+    if reco_ids:
+        countToThree = 0
+        for reco in reco_ids:
+            if(countToThree > 2):
+                break
+            else:
+                request_recommended_pack = urllib.request.Request('http://exp-api:8000/pack_detail/' + str(reco) + '/')
+                json_recommended_pack = urllib.request.urlopen(request_recommended_pack).read().decode('utf-8')
+                recommended_pack = json.loads(json_recommended_pack)
+                context['recommendations'][reco] = recommended_pack
+                countToThree += 1
+
     # Add logged-in info
     context['loggedIn'] = logged_in
-    return HttpResponse(template.render(context, request))
+    return JsonResponse(context)
 
 def user_detail(request, pk):
     # Check if user logged in (for login/logout link)
