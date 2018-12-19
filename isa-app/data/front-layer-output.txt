@@ -1,0 +1,143 @@
+{
+    "recommendations": {
+        "2": {
+            "recommendations": {
+                "recommended": [
+                    3,
+                    4,
+                    5
+                ],
+                "item_id": 2
+            },
+            "samples": [
+                {
+                    "name": "Waterfall sound effect",
+                    "second_length": 57,
+                    "minute_length": 1,
+                    "id": 1,
+                    "pack": 2
+                },
+                {
+                    "name": "Rain sound effect",
+                    "second_length": 58,
+                    "minute_length": 1,
+                    "id": 2,
+                    "pack": 2
+                },
+                {
+                    "name": "Ocean sound effect",
+                    "second_length": 49,
+                    "minute_length": 1,
+                    "id": 3,
+                    "pack": 2
+                },
+                {
+                    "name": "Crickets sound effect",
+                    "second_length": 1,
+                    "minute_length": 2,
+                    "id": 4,
+                    "pack": 2
+                },
+                {
+                    "name": "Birdsong sound effect",
+                    "second_length": 43,
+                    "minute_length": 1,
+                    "id": 5,
+                    "pack": 2
+                }
+            ],
+            "pack": {
+                "num_samples": 4,
+                "name": "Ambient sound effects",
+                "price": "1.50",
+                "current_seller": null,
+                "description": "What the title says.",
+                "purchase_count": 0,
+                "id": 2,
+                "buyers": []
+            }
+        },
+        "3": {
+            "recommendations": {
+                "recommended": [
+                    4,
+                    5
+                ],
+                "item_id": 3
+            },
+            "samples": [
+                {
+                    "name": "Bongo sound effect",
+                    "second_length": 43,
+                    "minute_length": 1,
+                    "id": 7,
+                    "pack": 3
+                }
+            ],
+            "pack": {
+                "num_samples": 1,
+                "name": "Drum sound effects",
+                "price": "2.00",
+                "current_seller": null,
+                "description": "Read the title.",
+                "purchase_count": 0,
+                "id": 3,
+                "buyers": []
+            }
+        },
+        "4": {
+            "recommendations": {
+                "recommended": [
+                    5
+                ],
+                "item_id": 4
+            },
+            "samples": [
+                {
+                    "name": "Violin plucked sound effect",
+                    "second_length": 22,
+                    "minute_length": 1,
+                    "id": 8,
+                    "pack": 4
+                }
+            ],
+            "pack": {
+                "num_samples": 1,
+                "name": "Violin sound effects",
+                "price": "1.00",
+                "current_seller": null,
+                "description": "Descriptive stuff goes here.",
+                "purchase_count": 0,
+                "id": 4,
+                "buyers": []
+            }
+        },
+        "recommended": [
+            2,
+            3,
+            4,
+            5
+        ],
+        "item_id": 1
+    },
+    "loggedIn": false,
+    "samples": [
+        {
+            "name": "Trombone sound effect",
+            "second_length": 0,
+            "minute_length": 1,
+            "id": 6,
+            "pack": 1
+        }
+    ],
+    "pack": {
+        "num_samples": 1,
+        "name": "Brass sound effects",
+        "price": "1.75",
+        "current_seller": null,
+        "description": "Yeah. Trumpets.",
+        "purchase_count": 1,
+        "id": 1,
+        "buyers": []
+    }
+}
