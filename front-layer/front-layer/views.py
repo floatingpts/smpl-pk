@@ -55,6 +55,8 @@ def pack_detail(request, pk):
     context = pack
 
     reco_ids = context['recommendations']['recommended']
+    context['recom_packs'] = {}
+
     if reco_ids:
         countToThree = 0
         for reco in reco_ids:
@@ -64,7 +66,7 @@ def pack_detail(request, pk):
                 request_recommended_pack = urllib.request.Request('http://exp-api:8000/pack_detail/' + str(reco) + '/')
                 json_recommended_pack = urllib.request.urlopen(request_recommended_pack).read().decode('utf-8')
                 recommended_pack = json.loads(json_recommended_pack)
-                context['recommendations'][reco] = recommended_pack
+                context['recom_packs'][reco] = recommended_pack
                 countToThree += 1
 
     # Add logged-in info
